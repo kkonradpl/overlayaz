@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=overlayaz
+Comment=Photo visibility analysis software
+Icon=overlayaz
+Exec=overlayaz
+Terminal=false
+Categories=Graphics;
+StartupNotify=false
