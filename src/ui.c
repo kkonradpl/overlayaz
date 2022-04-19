@@ -581,7 +581,10 @@ ui_key_press(GtkWidget      *widget,
     {
     case GDK_KEY_Escape:
         if (overlayaz_ui_get_menu(ui) == OVERLAYAZ_WINDOW_MENU_REF)
+        {
             overlayaz_ui_menu_ref_none(ui->r);
+            overlayaz_ui_update_view(ui, OVERLAYAZ_UI_UPDATE_IMAGE);
+        }
         break;
 
     case GDK_KEY_1:
