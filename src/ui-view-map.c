@@ -146,13 +146,16 @@ overlayaz_ui_view_map_update(overlayaz_ui_view_map_t *ui_map)
     ui_view_map_remove_track(ui_map->map, &ui_map->track_bound[0]);
     ui_view_map_remove_track(ui_map->map, &ui_map->track_bound[1]);
 
-    if (overlayaz_get_location(ui_map->o, &home))
-    {
-        ui_map->img_home = osm_gps_map_image_add_with_alignment(ui_map->map,
-                                                                (gfloat)home.latitude, (gfloat)home.longitude,
-                                                                ui_map->pixbuf_home,
-                                                                0.5f, 1.0f);
-    }
+    if (!overlayaz_get_location(ui_map->o, &home))
+        return;
+
+    ui_map->img_home = osm_gps_map_image_add_with_alignment(ui_map->map,
+                                                            (gfloat)home.latitude, (gfloat)home.longitude,
+                                                            ui_map->pixbuf_home,
+                                                            0.5f, 1.0f);
+
+    ui_view_map_update_grid(ui_map);
+    ui_view_map_update_markers(ui_map);
 
     if (overlayaz_get_ref_location(ui_map->o, OVERLAYAZ_REF_AZ, OVERLAYAZ_REF_A, &refA))
     {
@@ -160,36 +163,30 @@ overlayaz_ui_view_map_update(overlayaz_ui_view_map_t *ui_map)
                                                                                                   (gfloat)refA.latitude, (gfloat)refA.longitude,
                                                                                                   ui_map->pixbuf_ref[OVERLAYAZ_REF_AZ][OVERLAYAZ_REF_A],
                                                                                                   0.5f, 1.0f);
+    }
 
-        if (overlayaz_get_ref_location(ui_map->o, OVERLAYAZ_REF_AZ, OVERLAYAZ_REF_B, &refB))
-        {
-            ui_view_map_remove_image(ui_map->map, &ui_map->img_ref[OVERLAYAZ_REF_AZ][OVERLAYAZ_REF_B]);
-            ui_map->img_ref[OVERLAYAZ_REF_AZ][OVERLAYAZ_REF_B] = osm_gps_map_image_add_with_alignment(ui_map->map,
-                                                                                                      (gfloat)refB.latitude, (gfloat)refB.longitude,
-                                                                                                      ui_map->pixbuf_ref[OVERLAYAZ_REF_AZ][OVERLAYAZ_REF_B],
-                                                                                                      0.5f, 1.0f);
-        }
-
-        ui_view_map_update_grid(ui_map);
-        ui_view_map_update_markers(ui_map);
+    if (overlayaz_get_ref_location(ui_map->o, OVERLAYAZ_REF_AZ, OVERLAYAZ_REF_B, &refB))
+    {
+        ui_map->img_ref[OVERLAYAZ_REF_AZ][OVERLAYAZ_REF_B] = osm_gps_map_image_add_with_alignment(ui_map->map,
+                                                                                                  (gfloat)refB.latitude, (gfloat)refB.longitude,
+                                                                                                  ui_map->pixbuf_ref[OVERLAYAZ_REF_AZ][OVERLAYAZ_REF_B],
+                                                                                                  0.5f, 1.0f);
     }
 
     if (overlayaz_get_ref_location(ui_map->o, OVERLAYAZ_REF_EL, OVERLAYAZ_REF_A, &refA))
     {
-        ui_view_map_remove_image(ui_map->map, &ui_map->img_ref[OVERLAYAZ_REF_EL][OVERLAYAZ_REF_A]);
         ui_map->img_ref[OVERLAYAZ_REF_EL][OVERLAYAZ_REF_A] = osm_gps_map_image_add_with_alignment(ui_map->map,
                                                                                                   (gfloat)refA.latitude, (gfloat)refA.longitude,
                                                                                                   ui_map->pixbuf_ref[OVERLAYAZ_REF_EL][OVERLAYAZ_REF_A],
                                                                                                   0.5f, 1.0f);
+    }
 
-        if (overlayaz_get_ref_location(ui_map->o, OVERLAYAZ_REF_EL, OVERLAYAZ_REF_B, &refB))
-        {
-            ui_view_map_remove_image(ui_map->map, &ui_map->img_ref[OVERLAYAZ_REF_EL][OVERLAYAZ_REF_B]);
-            ui_map->img_ref[OVERLAYAZ_REF_EL][OVERLAYAZ_REF_B] = osm_gps_map_image_add_with_alignment(ui_map->map,
-                                                                                                      (gfloat)refB.latitude, (gfloat)refB.longitude,
-                                                                                                      ui_map->pixbuf_ref[OVERLAYAZ_REF_EL][OVERLAYAZ_REF_B],
-                                                                                                      0.5f, 1.0f);
-        }
+    if (overlayaz_get_ref_location(ui_map->o, OVERLAYAZ_REF_EL, OVERLAYAZ_REF_B, &refB))
+    {
+        ui_map->img_ref[OVERLAYAZ_REF_EL][OVERLAYAZ_REF_B] = osm_gps_map_image_add_with_alignment(ui_map->map,
+                                                                                                  (gfloat)refB.latitude, (gfloat)refB.longitude,
+                                                                                                  ui_map->pixbuf_ref[OVERLAYAZ_REF_EL][OVERLAYAZ_REF_B],
+                                                                                                  0.5f, 1.0f);
     }
 }
 
