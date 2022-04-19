@@ -288,13 +288,7 @@ overlayaz_ui_action_location(overlayaz_ui_t           *ui,
                                       latitude, longitude,
                                       &azimuth, NULL, NULL);
 
-                if (overlayaz_get_position(ui->o, OVERLAYAZ_REF_AZ, azimuth, NULL))
-                    ui_add_marker(ui, latitude, longitude, NAN);
-                else
-                    overlayaz_dialog(overlayaz_ui_get_parent(ui),
-                                     GTK_MESSAGE_WARNING,
-                                     "New marker",
-                                     "Unable to add new marker.\nLocation is out of bounds.");
+                ui_add_marker(ui, latitude, longitude, NAN);
             }
         }
     }
