@@ -29,21 +29,29 @@
 #define UI_VIEW_MAP_ZOOM_MIN 3
 #define UI_VIEW_MAP_ZOOM_MAX 19
 
+#define UI_VIEW_MAP_MARKER_CACHE 100
+
 struct overlayaz_ui_view_map
 {
     overlayaz_ui_t *ui;
     OsmGpsMap *map;
     const overlayaz_t *o;
+    gboolean map_busy;
 
+    /* Pixbuf caches */
     GdkPixbuf *pixbuf_home;
-    OsmGpsMapImage *img_home;
     GdkPixbuf *pixbuf_ref[OVERLAYAZ_REF_TYPES][OVERLAYAZ_REF_IDS];
+    GdkPixbuf *pixbuf_marker[UI_VIEW_MAP_MARKER_CACHE];
+
+    /* Map images */
+    OsmGpsMapImage *img_home;
     OsmGpsMapImage *img_ref[OVERLAYAZ_REF_TYPES][OVERLAYAZ_REF_IDS];
+    GSList *img_marker;
+
+    /* Map tracks */
     OsmGpsMapTrack *track_bound[2];
     GSList *track_grid;
     GSList *track_marker;
-    GSList *pixbuf_marker;
-    gboolean map_busy;
 };
 
 static GdkRGBA color_grid = { .red = 1.0, .blue = 1.0, .green = 1.0, .alpha = 0.2 };
@@ -72,6 +80,7 @@ overlayaz_ui_view_map_new(overlayaz_ui_t    *ui,
     overlayaz_ui_view_map_t *ui_map = g_malloc0(sizeof(overlayaz_ui_view_map_t));
     GValue cache = G_VALUE_INIT;
     GValue source = G_VALUE_INIT;
+    gint t, i;
 
     ui_map->ui = ui;
     ui_map->map = OSM_GPS_MAP(map);
@@ -87,11 +96,12 @@ overlayaz_ui_view_map_new(overlayaz_ui_t    *ui,
     g_object_set_property(G_OBJECT(ui_map->map), "map-source", &source);
     g_value_unset(&source);
 
+    /* Pixbuf caches */
     ui_map->pixbuf_home = overlayaz_icon_home(UI_VIEW_MAP_ICON_SIZE);
-    ui_map->pixbuf_ref[OVERLAYAZ_REF_AZ][OVERLAYAZ_REF_A] = overlayaz_icon_ref(UI_VIEW_MAP_ICON_SIZE, OVERLAYAZ_REF_AZ, OVERLAYAZ_REF_A);
-    ui_map->pixbuf_ref[OVERLAYAZ_REF_AZ][OVERLAYAZ_REF_B] = overlayaz_icon_ref(UI_VIEW_MAP_ICON_SIZE, OVERLAYAZ_REF_AZ, OVERLAYAZ_REF_B);
-    ui_map->pixbuf_ref[OVERLAYAZ_REF_EL][OVERLAYAZ_REF_A] = overlayaz_icon_ref(UI_VIEW_MAP_ICON_SIZE, OVERLAYAZ_REF_EL, OVERLAYAZ_REF_A);
-    ui_map->pixbuf_ref[OVERLAYAZ_REF_EL][OVERLAYAZ_REF_B] = overlayaz_icon_ref(UI_VIEW_MAP_ICON_SIZE, OVERLAYAZ_REF_EL, OVERLAYAZ_REF_B);
+    for (t = 0; t < OVERLAYAZ_REF_TYPES; t++)
+        for (i = 0; i < OVERLAYAZ_REF_IDS; i++)
+            ui_map->pixbuf_ref[t][i] = overlayaz_icon_ref(UI_VIEW_MAP_ICON_SIZE, t, i);
+    /* Pixbufs for markers will be created on-demand */
 
     g_signal_connect(ui_map->map, "button-press-event", G_CALLBACK(ui_view_map_press), ui_map);
     g_signal_connect(ui_map->map, "scroll-event", G_CALLBACK(ui_view_map_scroll), ui_map);
@@ -105,14 +115,19 @@ overlayaz_ui_view_map_new(overlayaz_ui_t    *ui,
 void
 overlayaz_ui_view_map_free(overlayaz_ui_view_map_t *ui_map)
 {
+    gint t, i;
+
     g_object_unref(ui_map->pixbuf_home);
-    g_object_unref(ui_map->pixbuf_ref[OVERLAYAZ_REF_AZ][OVERLAYAZ_REF_A]);
-    g_object_unref(ui_map->pixbuf_ref[OVERLAYAZ_REF_AZ][OVERLAYAZ_REF_B]);
-    g_object_unref(ui_map->pixbuf_ref[OVERLAYAZ_REF_EL][OVERLAYAZ_REF_A]);
-    g_object_unref(ui_map->pixbuf_ref[OVERLAYAZ_REF_EL][OVERLAYAZ_REF_B]);
+    for (t = 0; t < OVERLAYAZ_REF_TYPES; t++)
+        for (i = 0; i < OVERLAYAZ_REF_IDS; i++)
+            g_object_unref(ui_map->pixbuf_ref[t][i]);
+    for (i = 0; i < UI_VIEW_MAP_MARKER_CACHE; i++)
+        if (ui_map->pixbuf_marker[i])
+            g_object_unref(ui_map->pixbuf_marker[i]);
+
+    g_slist_free(ui_map->img_marker);
     g_slist_free(ui_map->track_grid);
     g_slist_free(ui_map->track_marker);
-    g_slist_free(ui_map->pixbuf_marker);
     g_free(ui_map);
 }
 
@@ -141,7 +156,7 @@ overlayaz_ui_view_map_update(overlayaz_ui_view_map_t *ui_map)
         osm_gps_map_track_remove(ui_map->map, it->data);
     for (it = ui_map->track_marker; it; it = it->next)
         osm_gps_map_track_remove(ui_map->map, it->data);
-    for (it = ui_map->pixbuf_marker; it; it = it->next)
+    for (it = ui_map->img_marker; it; it = it->next)
         osm_gps_map_image_remove(ui_map->map, it->data);
     ui_view_map_remove_track(ui_map->map, &ui_map->track_bound[0]);
     ui_view_map_remove_track(ui_map->map, &ui_map->track_bound[1]);
@@ -188,6 +203,7 @@ overlayaz_ui_view_map_update(overlayaz_ui_view_map_t *ui_map)
                                                                                                   ui_map->pixbuf_ref[OVERLAYAZ_REF_EL][OVERLAYAZ_REF_B],
                                                                                                   0.5f, 1.0f);
     }
+
 }
 
 static void
@@ -236,6 +252,7 @@ ui_view_map_update_markers(overlayaz_ui_view_map_t *ui_map)
     gdouble angle, dist;
     OsmGpsMapTrack *track;
     OsmGpsMapImage *image;
+    gint pixbuf_id;
 
     if (!overlayaz_get_location(ui_map->o, &home))
         return;
@@ -253,13 +270,19 @@ ui_view_map_update_markers(overlayaz_ui_view_map_t *ui_map)
                                   overlayaz_marker_get_longitude(m),
                                   &angle, NULL, &dist);
 
+            pixbuf_id = overlayaz_marker_iter_get_id(iter);
+            if (pixbuf_id >= UI_VIEW_MAP_MARKER_CACHE)
+                pixbuf_id = 0;
+
+            if (!ui_map->pixbuf_marker[pixbuf_id])
+                ui_map->pixbuf_marker[pixbuf_id] = overlayaz_icon_marker(UI_VIEW_MAP_ICON_SIZE, pixbuf_id);
+
             image = osm_gps_map_image_add_with_alignment(ui_map->map,
                                                          (gfloat)overlayaz_marker_get_latitude(m),
                                                          (gfloat)overlayaz_marker_get_longitude(m),
-                                                         overlayaz_icon_marker(UI_VIEW_MAP_ICON_SIZE,
-                                                                                      overlayaz_marker_iter_get_id(iter)),
+                                                         ui_map->pixbuf_marker[pixbuf_id],
                                                          0.5f, 1.0f);
-            ui_map->pixbuf_marker = g_slist_append(ui_map->pixbuf_marker, image);
+            ui_map->img_marker = g_slist_append(ui_map->img_marker, image);
 
             /* Draw path for valid markers only (within image bounds) */
             if (overlayaz_get_position(ui_map->o, OVERLAYAZ_REF_AZ, angle, NULL))

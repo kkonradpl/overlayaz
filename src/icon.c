@@ -107,7 +107,7 @@ overlayaz_icon_marker(gint size,
 {
     gchar *text;
 
-    if(id < 100)
+    if (id > 0)
         text = g_strdup_printf("%d", id);
     else
         text = g_strdup_printf(" ");
