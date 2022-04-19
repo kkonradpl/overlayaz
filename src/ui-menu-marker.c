@@ -134,11 +134,18 @@ overlayaz_ui_menu_marker_sync(overlayaz_ui_menu_marker_t *ui_m,
 }
 
 void
-overlayaz_ui_menu_marker_show_id(overlayaz_ui_menu_marker_t *ui_m,
-                                 gint                        id)
+overlayaz_ui_menu_marker_set_id(overlayaz_ui_menu_marker_t *ui_m,
+                                gint                        id)
 {
-    gtk_combo_box_set_active(GTK_COMBO_BOX(ui_m->m->combo_marker), id);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(ui_m->m->combo_marker), id - 1);
 }
+
+gint
+overlayaz_ui_menu_marker_get_id(overlayaz_ui_menu_marker_t *ui_m)
+{
+    return gtk_combo_box_get_active(GTK_COMBO_BOX(ui_m->m->combo_marker)) + 1;
+}
+
 
 const overlayaz_marker_t*
 overlayaz_ui_menu_marker_get_current(overlayaz_ui_menu_marker_t *ui_m)
@@ -208,6 +215,8 @@ ui_menu_marker_combo_changed(GtkComboBox                *widget,
     gboolean active;
     gint count;
     static const GdkRGBA color = {0};
+
+    overlayaz_ui_update_view(ui_m->ui, OVERLAYAZ_UI_UPDATE_MAP);
 
     active = gtk_combo_box_get_active_iter(widget, &iter);
     gtk_widget_set_sensitive(ui_m->m->button_up, active);

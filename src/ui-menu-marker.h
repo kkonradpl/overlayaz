@@ -21,7 +21,8 @@ typedef struct overlayaz_ui_menu_marker overlayaz_ui_menu_marker_t;
 overlayaz_ui_menu_marker_t* overlayaz_ui_menu_marker_new(overlayaz_ui_t*, struct overlayaz_menu_marker*, overlayaz_t*);
 void overlayaz_ui_menu_marker_free(overlayaz_ui_menu_marker_t*);
 void overlayaz_ui_menu_marker_sync(overlayaz_ui_menu_marker_t*, gboolean);
-void overlayaz_ui_menu_marker_show_id(overlayaz_ui_menu_marker_t*, gint);
+void overlayaz_ui_menu_marker_set_id(overlayaz_ui_menu_marker_t*, gint);
+gint overlayaz_ui_menu_marker_get_id(overlayaz_ui_menu_marker_t*);
 const overlayaz_marker_t* overlayaz_ui_menu_marker_get_current(overlayaz_ui_menu_marker_t*);
 
 #endif

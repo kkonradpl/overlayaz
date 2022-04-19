@@ -49,9 +49,9 @@ struct overlayaz_ui_view_map
     GSList *img_marker;
 
     /* Map tracks */
+    OsmGpsMapTrack *track_marker;
     OsmGpsMapTrack *track_bound[2];
     GSList *track_grid;
-    GSList *track_marker;
 };
 
 static GdkRGBA color_grid = { .red = 1.0, .blue = 1.0, .green = 1.0, .alpha = 0.2 };
@@ -127,7 +127,6 @@ overlayaz_ui_view_map_free(overlayaz_ui_view_map_t *ui_map)
 
     g_slist_free(ui_map->img_marker);
     g_slist_free(ui_map->track_grid);
-    g_slist_free(ui_map->track_marker);
     g_free(ui_map);
 }
 
@@ -159,6 +158,7 @@ overlayaz_ui_view_map_update(overlayaz_ui_view_map_t *ui_map)
     g_slist_free(ui_map->img_marker);
     ui_map->img_marker = NULL;
 
+    ui_view_map_remove_track(ui_map->map, &ui_map->track_marker);
     ui_view_map_remove_track(ui_map->map, &ui_map->track_bound[0]);
     ui_view_map_remove_track(ui_map->map, &ui_map->track_bound[1]);
 
@@ -166,11 +166,6 @@ overlayaz_ui_view_map_update(overlayaz_ui_view_map_t *ui_map)
         osm_gps_map_track_remove(ui_map->map, it->data);
     g_slist_free(ui_map->track_grid);
     ui_map->track_grid = NULL;
-
-    for (it = ui_map->track_marker; it; it = it->next)
-        osm_gps_map_track_remove(ui_map->map, it->data);
-    g_slist_free(ui_map->track_marker);
-    ui_map->track_marker = NULL;
 
     /* Recreate map objects */
     ui_view_map_update_grid(ui_map);
@@ -243,7 +238,6 @@ ui_view_map_update_markers(overlayaz_ui_view_map_t *ui_map)
     overlayaz_marker_iter_t *iter;
     const overlayaz_marker_t *m;
     gdouble angle, dist;
-    OsmGpsMapTrack *track;
     OsmGpsMapImage *image;
     gint pixbuf_id;
 
@@ -277,12 +271,12 @@ ui_view_map_update_markers(overlayaz_ui_view_map_t *ui_map)
                                                          0.5f, 1.0f);
             ui_map->img_marker = g_slist_append(ui_map->img_marker, image);
 
-            /* Draw path for valid markers only (within image bounds) */
-            if (overlayaz_get_position(ui_map->o, OVERLAYAZ_REF_AZ, angle, NULL))
+            /* Draw path only for selected and valid marker (within image bounds) */
+            if (overlayaz_ui_get_marker_id(ui_map->ui) == overlayaz_marker_iter_get_id(iter) &&
+                overlayaz_get_position(ui_map->o, OVERLAYAZ_REF_AZ, angle, NULL))
             {
-                track = ui_view_map_track_new(home.latitude, home.longitude, angle, dist, &color_marker);
-                ui_map->track_marker = g_slist_append(ui_map->track_marker, track);
-                osm_gps_map_track_add(ui_map->map, track);
+                ui_map->track_marker = ui_view_map_track_new(home.latitude, home.longitude, angle, dist, &color_marker);
+                osm_gps_map_track_add(ui_map->map, ui_map->track_marker);
             }
         }
     } while (overlayaz_marker_iter_next(iter, &m));

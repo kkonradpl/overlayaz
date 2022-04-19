@@ -47,6 +47,7 @@ void overlayaz_ui_show_elevation(overlayaz_ui_t*, gdouble);
 void overlayaz_ui_show_distance(overlayaz_ui_t*, gdouble);
 
 gboolean overlayaz_ui_get_ref(const overlayaz_ui_t*, enum overlayaz_ref_type*, enum overlayaz_ref_id*);
+gint overlayaz_ui_get_marker_id(overlayaz_ui_t*);
 
 void overlayaz_ui_set_rotation(overlayaz_ui_t*, gdouble);
 

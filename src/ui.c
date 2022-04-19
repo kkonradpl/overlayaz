@@ -200,6 +200,13 @@ overlayaz_ui_get_ref(const overlayaz_ui_t    *ui,
     return overlayaz_ui_menu_ref_get(ui->r, ref_type, ref_id);
 }
 
+gint
+overlayaz_ui_get_marker_id(overlayaz_ui_t *ui)
+{
+    return overlayaz_ui_menu_marker_get_id(ui->m);
+}
+
+
 void
 overlayaz_ui_set_rotation(overlayaz_ui_t *ui,
                           gdouble         value)
@@ -700,7 +707,7 @@ ui_add_marker(overlayaz_ui_t *ui,
     overlayaz_marker_list_add(overlayaz_get_marker_list(ui->o), m);
 
     overlayaz_ui_set_menu(ui, OVERLAYAZ_WINDOW_MENU_MARKER);
-    overlayaz_ui_menu_marker_show_id(ui->m, count);
+    overlayaz_ui_menu_marker_set_id(ui->m, count + 1);
     overlayaz_ui_update_view(ui, OVERLAYAZ_UI_UPDATE_IMAGE | OVERLAYAZ_UI_UPDATE_MAP);
 }
 
