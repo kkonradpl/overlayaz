@@ -446,7 +446,10 @@ ui_menu_page_switched(GtkNotebook    *notebook,
                       overlayaz_ui_t *ui)
 {
     if (page_num != OVERLAYAZ_WINDOW_MENU_REF)
+    {
         overlayaz_ui_menu_ref_none(ui->r);
+        overlayaz_ui_update_view(ui, OVERLAYAZ_UI_UPDATE_IMAGE);
+    }
 }
 
 static void
