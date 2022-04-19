@@ -190,7 +190,7 @@ overlayaz_ui_view_map_update(overlayaz_ui_view_map_t *ui_map)
         }
     }
 
-    if (!overlayaz_get_location(ui_map->o, &home))
+    if (overlayaz_get_location(ui_map->o, &home))
     {
         ui_map->img_home = osm_gps_map_image_add_with_alignment(ui_map->map,
                                                                 (gfloat)home.latitude, (gfloat)home.longitude,
