@@ -236,7 +236,6 @@ ui_view_map_update_markers(overlayaz_ui_view_map_t *ui_map)
     gdouble angle, dist;
     OsmGpsMapTrack *track;
     OsmGpsMapImage *image;
-    gdouble pos;
 
     if (!overlayaz_get_location(ui_map->o, &home))
         return;
@@ -254,19 +253,20 @@ ui_view_map_update_markers(overlayaz_ui_view_map_t *ui_map)
                                   overlayaz_marker_get_longitude(m),
                                   &angle, NULL, &dist);
 
-            /* Make sure that angle is within boundaries */
-            if (overlayaz_get_position(ui_map->o, OVERLAYAZ_REF_AZ, angle, &pos))
+            image = osm_gps_map_image_add_with_alignment(ui_map->map,
+                                                         (gfloat)overlayaz_marker_get_latitude(m),
+                                                         (gfloat)overlayaz_marker_get_longitude(m),
+                                                         overlayaz_icon_marker(UI_VIEW_MAP_ICON_SIZE,
+                                                                                      overlayaz_marker_iter_get_id(iter)),
+                                                         0.5f, 1.0f);
+            ui_map->pixbuf_marker = g_slist_append(ui_map->pixbuf_marker, image);
+
+            /* Draw path for valid markers only (within image bounds) */
+            if (overlayaz_get_position(ui_map->o, OVERLAYAZ_REF_AZ, angle, NULL))
             {
                 track = ui_view_map_track_new(home.latitude, home.longitude, angle, dist, &color_marker);
                 ui_map->track_marker = g_slist_append(ui_map->track_marker, track);
                 osm_gps_map_track_add(ui_map->map, track);
-                image = osm_gps_map_image_add_with_alignment(ui_map->map,
-                                                             (gfloat)overlayaz_marker_get_latitude(m),
-                                                             (gfloat)overlayaz_marker_get_longitude(m),
-                                                             overlayaz_icon_marker(UI_VIEW_MAP_ICON_SIZE,
-                                                                                          overlayaz_marker_iter_get_id(iter)),
-                                                             0.5f, 1.0f);
-                ui_map->pixbuf_marker = g_slist_append(ui_map->pixbuf_marker, image);
             }
         }
     } while (overlayaz_marker_iter_next(iter, &m));
