@@ -228,60 +228,48 @@ profile_parse_ref(overlayaz_t             *o,
 {
     json_object *obj_position, *obj_latitude, *obj_longitude, *obj_altitude;
     json_object *obj_ratio;
-    struct overlayaz_location locationA =
-    {
-        .latitude = NAN,
-        .longitude = NAN,
-        .altitude = 0.0
-    };
-
-    struct overlayaz_location locationB =
-    {
-        .latitude = NAN,
-        .longitude = NAN,
-        .altitude = 0.0
-    };
+    struct overlayaz_location locationA = { NAN, NAN, 0.0 };
+    struct overlayaz_location locationB = { NAN, NAN, 0.0 };
     gdouble positionA = NAN;
     gdouble positionB = NAN;
-    gdouble ratio = 0.0;
+    gdouble ratio;
 
     if (json_object_object_get_ex(root, PROFILE_KEY_REF_FIRST_POSITION, &obj_position))
-    {
         profile_json_get_double(obj_position, &positionA);
 
-        if (json_object_object_get_ex(root, PROFILE_KEY_REF_FIRST_LATITUDE, &obj_latitude))
-            profile_json_get_double(obj_latitude, &locationA.latitude);
+    if (json_object_object_get_ex(root, PROFILE_KEY_REF_FIRST_LATITUDE, &obj_latitude))
+        profile_json_get_double(obj_latitude, &locationA.latitude);
 
-        if (json_object_object_get_ex(root, PROFILE_KEY_REF_FIRST_LONGITUDE, &obj_longitude))
-            profile_json_get_double(obj_longitude, &locationA.longitude);
+    if (json_object_object_get_ex(root, PROFILE_KEY_REF_FIRST_LONGITUDE, &obj_longitude))
+        profile_json_get_double(obj_longitude, &locationA.longitude);
 
-        if (json_object_object_get_ex(root, PROFILE_KEY_REF_FIRST_ALTITUDE, &obj_altitude))
-            profile_json_get_double(obj_altitude, &locationA.altitude);
+    if (json_object_object_get_ex(root, PROFILE_KEY_REF_FIRST_ALTITUDE, &obj_altitude))
+        profile_json_get_double(obj_altitude, &locationA.altitude);
 
-        if (json_object_object_get_ex(root, PROFILE_KEY_REF_SECOND_POSITION, &obj_position))
-        {
-            profile_json_get_double(obj_position, &positionB);
+    if (json_object_object_get_ex(root, PROFILE_KEY_REF_SECOND_POSITION, &obj_position))
+        profile_json_get_double(obj_position, &positionB);
 
-            if (json_object_object_get_ex(root, PROFILE_KEY_REF_SECOND_LATITUDE, &obj_position))
-                profile_json_get_double(obj_position, &locationB.latitude);
+    if (json_object_object_get_ex(root, PROFILE_KEY_REF_SECOND_LATITUDE, &obj_position))
+        profile_json_get_double(obj_position, &locationB.latitude);
 
-            if (json_object_object_get_ex(root, PROFILE_KEY_REF_SECOND_LONGITUDE, &obj_longitude))
-                profile_json_get_double(obj_longitude, &locationB.longitude);
+    if (json_object_object_get_ex(root, PROFILE_KEY_REF_SECOND_LONGITUDE, &obj_longitude))
+        profile_json_get_double(obj_longitude, &locationB.longitude);
 
-            if (json_object_object_get_ex(root, PROFILE_KEY_REF_SECOND_ALTITUDE, &obj_altitude))
-                profile_json_get_double(obj_altitude, &locationB.altitude);
+    if (json_object_object_get_ex(root, PROFILE_KEY_REF_SECOND_ALTITUDE, &obj_altitude))
+        profile_json_get_double(obj_altitude, &locationB.altitude);
 
-            overlayaz_set_ref_two(o, type,
-                                  &locationA, positionA,
-                                  &locationB, positionB);
-        }
-        else if (json_object_object_get_ex(root, PROFILE_KEY_REF_RATIO, &obj_ratio))
-        {
-            profile_json_get_double(obj_ratio, &ratio);
-            overlayaz_set_ref_one(o, type,
-                                  &locationA, positionA,
-                                  ratio);
-        }
+    if (json_object_object_get_ex(root, PROFILE_KEY_REF_RATIO, &obj_ratio))
+    {
+        profile_json_get_double(obj_ratio, &ratio);
+        overlayaz_set_ref_one(o, type,
+                              &locationA, positionA,
+                              ratio);
+    }
+    else
+    {
+        overlayaz_set_ref_two(o, type,
+                              &locationA, positionA,
+                              &locationB, positionB);
     }
 }
 
@@ -468,36 +456,50 @@ profile_build_ref(const overlayaz_t       *o,
 {
     json_object *root_ref;
     struct overlayaz_location location;
+    gboolean ref_loc, ref_pos;
     gdouble position;
     gdouble ratio;
 
-    if (overlayaz_get_ref_location(o, type, OVERLAYAZ_REF_A, &location) &&
-        overlayaz_get_ref_position(o, type, OVERLAYAZ_REF_A, &position))
-    {
-        root_ref = json_object_new_object();
+    ref_loc = overlayaz_get_ref_location(o, type, OVERLAYAZ_REF_A, &location);
+    ref_pos = overlayaz_get_ref_position(o, type, OVERLAYAZ_REF_A, &position);
+
+    if (!ref_loc && !ref_pos)
+        return;
+
+    root_ref = json_object_new_object();
+
+    if (ref_pos)
         json_object_object_add(root_ref, PROFILE_KEY_REF_FIRST_POSITION, profile_json_new_double(position));
+    if (ref_loc)
+    {
         json_object_object_add(root_ref, PROFILE_KEY_REF_FIRST_LATITUDE, profile_json_new_double(location.latitude));
         json_object_object_add(root_ref, PROFILE_KEY_REF_FIRST_LONGITUDE, profile_json_new_double(location.longitude));
-        if (type == OVERLAYAZ_REF_EL)
-            json_object_object_add(root_ref, PROFILE_KEY_REF_FIRST_ALTITUDE, profile_json_new_double(location.altitude));
+    }
+    if (type == OVERLAYAZ_REF_EL)
+        json_object_object_add(root_ref, PROFILE_KEY_REF_FIRST_ALTITUDE, profile_json_new_double(location.altitude));
 
-        if (overlayaz_get_ref_location(o, type, OVERLAYAZ_REF_B, &location) &&
-            overlayaz_get_ref_position(o, type, OVERLAYAZ_REF_B, &position))
-        {
+    ref_loc = overlayaz_get_ref_location(o, type, OVERLAYAZ_REF_B, &location);
+    ref_pos = overlayaz_get_ref_position(o, type, OVERLAYAZ_REF_B, &position);
+
+    if (!ref_loc && !ref_pos)
+    {
+        if (overlayaz_get_ratio(o, type, &ratio))
+            json_object_object_add(root_ref, PROFILE_KEY_REF_RATIO, profile_json_new_double(ratio));
+    }
+    else
+    {
+        if (ref_pos)
             json_object_object_add(root_ref, PROFILE_KEY_REF_SECOND_POSITION, profile_json_new_double(position));
+        if (ref_loc)
+        {
             json_object_object_add(root_ref, PROFILE_KEY_REF_SECOND_LATITUDE, profile_json_new_double(location.latitude));
             json_object_object_add(root_ref, PROFILE_KEY_REF_SECOND_LONGITUDE, profile_json_new_double(location.longitude));
-            if (type == OVERLAYAZ_REF_EL)
-                json_object_object_add(root_ref, PROFILE_KEY_REF_SECOND_ALTITUDE, profile_json_new_double(location.altitude));
         }
-        else
-        {
-            if (overlayaz_get_ratio(o, type, &ratio))
-               json_object_object_add(root_ref, PROFILE_KEY_REF_RATIO, profile_json_new_double(ratio));
-        }
-
-        json_object_object_add(root, key, root_ref);
+        if (type == OVERLAYAZ_REF_EL)
+            json_object_object_add(root_ref, PROFILE_KEY_REF_SECOND_ALTITUDE, profile_json_new_double(location.altitude));
     }
+
+    json_object_object_add(root, key, root_ref);
 }
 
 static void

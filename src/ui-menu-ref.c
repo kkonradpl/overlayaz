@@ -254,6 +254,9 @@ ui_menu_ref_sync(overlayaz_ui_menu_ref_t *ui_r,
     gdouble angle;
     gdouble ratio;
     gint limit;
+    gboolean ref_pos[OVERLAYAZ_REF_IDS];
+    gboolean ref_loc[OVERLAYAZ_REF_IDS];
+    gint i;
 
     limit = (type == OVERLAYAZ_REF_AZ) ? overlayaz_get_width(ui_r->o) : overlayaz_get_height(ui_r->o);
     gtk_spin_button_set_range(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[0][OVERLAYAZ_REF_RANGE_POSITION]), 0, limit);
@@ -262,61 +265,52 @@ ui_menu_ref_sync(overlayaz_ui_menu_ref_t *ui_r,
     /* HACK: We want to make sure that the "changed" signal is really emitted */
     gtk_combo_box_set_active(GTK_COMBO_BOX(ui_r->r->refs[type].combo_mode), -1);
 
-    if (overlayaz_get_ref_location(ui_r->o, type, OVERLAYAZ_REF_A, &location) &&
-        overlayaz_get_ref_position(ui_r->o, type, OVERLAYAZ_REF_A, &position))
+    for (i = 0; i < OVERLAYAZ_REF_IDS; i++)
     {
-        if (!overlayaz_get_angle(ui_r->o, type, position, &angle))
-            angle = 0.0;
-
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[0][OVERLAYAZ_REF_RANGE_LATITUDE]), location.latitude);
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[0][OVERLAYAZ_REF_RANGE_LONGITUDE]), location.longitude);
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[0][OVERLAYAZ_REF_RANGE_ALTITUDE]), location.altitude);
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[0][OVERLAYAZ_REF_RANGE_ANGLE]), angle);
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[0][OVERLAYAZ_REF_RANGE_POSITION]), position);
-
-        if (overlayaz_get_ref_location(ui_r->o, type, OVERLAYAZ_REF_B, &location) &&
-            overlayaz_get_ref_position(ui_r->o, type, OVERLAYAZ_REF_B, &position))
+        ref_loc[i] = overlayaz_get_ref_location(ui_r->o, type, i, &location);
+        if (ref_loc[i])
         {
-            if (!overlayaz_get_angle(ui_r->o, type, position, &angle))
-                angle = 0.0;
+            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[i][OVERLAYAZ_REF_RANGE_LATITUDE]), location.latitude);
+            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[i][OVERLAYAZ_REF_RANGE_LONGITUDE]), location.longitude);
+            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[i][OVERLAYAZ_REF_RANGE_ALTITUDE]), location.altitude);
+        }
+        else
+        {
+            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[i][OVERLAYAZ_REF_RANGE_LATITUDE]), 0.0);
+            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[i][OVERLAYAZ_REF_RANGE_LONGITUDE]), 0.0);
+            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[i][OVERLAYAZ_REF_RANGE_ALTITUDE]), 0.0);
+        }
 
-            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[1][OVERLAYAZ_REF_RANGE_LATITUDE]), location.latitude);
-            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[1][OVERLAYAZ_REF_RANGE_LONGITUDE]), location.longitude);
-            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[1][OVERLAYAZ_REF_RANGE_ALTITUDE]), location.altitude);
-            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[1][OVERLAYAZ_REF_RANGE_ANGLE]), angle);
-            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[1][OVERLAYAZ_REF_RANGE_POSITION]), position);
+        ref_pos[i] = overlayaz_get_ref_position(ui_r->o, type, i, &position);
+        if (ref_pos[i])
+        {
+            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[i][OVERLAYAZ_REF_RANGE_POSITION]), position);
+
+            if (overlayaz_get_angle(ui_r->o, type, position, &angle))
+                gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[i][OVERLAYAZ_REF_RANGE_ANGLE]), angle);
+            else
+                gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[i][OVERLAYAZ_REF_RANGE_ANGLE]), 0.0);
+        }
+        else
+        {
+            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[i][OVERLAYAZ_REF_RANGE_POSITION]), 0.0);
+        }
+    }
+
+    if (overlayaz_get_ratio(ui_r->o, type, &ratio))
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ratio), ratio);
+    else
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ratio), 0.0);
+
+    if (ref_loc[OVERLAYAZ_REF_A] || ref_pos[OVERLAYAZ_REF_A])
+    {
+        if (ref_loc[OVERLAYAZ_REF_B] || ref_pos[OVERLAYAZ_REF_B])
             gtk_combo_box_set_active(GTK_COMBO_BOX(ui_r->r->refs[type].combo_mode), OVERLAYAZ_REF_MODE_TWO_POINT);
-        }
         else
-        {
-            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[1][OVERLAYAZ_REF_RANGE_LATITUDE]), 0.0);
-            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[1][OVERLAYAZ_REF_RANGE_LONGITUDE]), 0.0);
-            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[1][OVERLAYAZ_REF_RANGE_ALTITUDE]), 0.0);
-            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[1][OVERLAYAZ_REF_RANGE_ANGLE]), 0.0);
-            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[1][OVERLAYAZ_REF_RANGE_POSITION]), 0.0);
             gtk_combo_box_set_active(GTK_COMBO_BOX(ui_r->r->refs[type].combo_mode), OVERLAYAZ_REF_MODE_ONE_POINT);
-        }
-
-        if (overlayaz_get_ratio(ui_r->o, type, &ratio))
-            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ratio), ratio);
-        else
-            gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ratio), 0.0);
     }
     else
     {
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[0][OVERLAYAZ_REF_RANGE_LATITUDE]), 0.0);
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[0][OVERLAYAZ_REF_RANGE_LONGITUDE]), 0.0);
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[0][OVERLAYAZ_REF_RANGE_ALTITUDE]), 0.0);
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[0][OVERLAYAZ_REF_RANGE_POSITION]), 0.0);
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[0][OVERLAYAZ_REF_RANGE_ANGLE]), 0.0);
-
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[1][OVERLAYAZ_REF_RANGE_LATITUDE]), 0.0);
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[1][OVERLAYAZ_REF_RANGE_LONGITUDE]), 0.0);
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[1][OVERLAYAZ_REF_RANGE_ALTITUDE]), 0.0);
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[1][OVERLAYAZ_REF_RANGE_POSITION]), 0.0);
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ref[1][OVERLAYAZ_REF_RANGE_ANGLE]), 0.0);
-
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ratio), 0.0);
         gtk_combo_box_set_active(GTK_COMBO_BOX(ui_r->r->refs[type].combo_mode), OVERLAYAZ_REF_MODE_DISABLED);
     }
 }
