@@ -20,6 +20,8 @@
 #include "conf.h"
 #include "icon.h"
 #include "ui-util.h"
+#include "exif.h"
+#include "dialog.h"
 
 struct overlayaz_ui_menu_ref
 {
@@ -41,6 +43,7 @@ static void ui_menu_ref_combo_mode_changed(GtkComboBox*, overlayaz_ui_menu_ref_t
 static void ui_menu_ref_button_ref_clicked(GtkButton*, overlayaz_ui_menu_ref_t*);
 static void ui_menu_ref_button_alt_clicked(GtkButton*, overlayaz_ui_menu_ref_t*);
 static void ui_menu_ref_button_home_clicked(GtkButton*, overlayaz_ui_menu_ref_t*);
+static void ui_menu_ref_button_exif_clicked(GtkButton*, overlayaz_ui_menu_ref_t*);
 static void ui_menu_ref_spin_ref_changed(GtkSpinButton*, overlayaz_ui_menu_ref_t*);
 static void ui_menu_ref_button_ratio_clicked(GtkButton*, overlayaz_ui_menu_ref_t*);
 static void ui_menu_ref_spin_ratio_changed(GtkSpinButton*, overlayaz_ui_menu_ref_t*);
@@ -118,6 +121,7 @@ overlayaz_ui_menu_ref_new(overlayaz_ui_t            *ui,
     g_object_set_data(G_OBJECT(ui_r->r->button_altitude), "ref-id", GINT_TO_POINTER(-1));
     g_signal_connect(ui_r->r->button_altitude, "clicked", G_CALLBACK(ui_menu_ref_button_alt_clicked), ui_r);
     g_signal_connect(ui_r->r->button_home, "clicked", G_CALLBACK(ui_menu_ref_button_home_clicked), ui_r);
+    g_signal_connect(ui_r->r->button_exif, "clicked", G_CALLBACK(ui_menu_ref_button_exif_clicked), ui_r);
 
     return ui_r;
 }
@@ -147,6 +151,7 @@ overlayaz_ui_menu_ref_sync(overlayaz_ui_menu_ref_t *ui_r,
     gtk_widget_set_sensitive(ui_r->r->spin_longitude, active);
     gtk_widget_set_sensitive(ui_r->r->button_altitude, active);
     gtk_widget_set_sensitive(ui_r->r->button_home, active);
+    gtk_widget_set_sensitive(ui_r->r->button_exif, active);
     gtk_widget_set_sensitive(ui_r->r->spin_altitude, active);
     gtk_widget_set_sensitive(ui_r->r->refs[0].combo_mode, active);
     gtk_widget_set_sensitive(ui_r->r->refs[1].combo_mode, active);
@@ -543,6 +548,32 @@ ui_menu_ref_button_home_clicked(GtkButton               *button,
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->spin_latitude), overlayaz_conf_get_latitude());
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->spin_longitude), overlayaz_conf_get_longitude());
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->spin_altitude), overlayaz_conf_get_altitude());
+}
+
+static void
+ui_menu_ref_button_exif_clicked(GtkButton               *button,
+                                overlayaz_ui_menu_ref_t *ui_r)
+{
+    const gchar *filename = overlayaz_get_filename(ui_r->o);
+    struct overlayaz_location location;
+
+    if (filename == NULL)
+        return;
+
+    if (!overlayaz_exif_get_location(filename, &location))
+    {
+        overlayaz_dialog(overlayaz_ui_get_parent(ui_r->ui),
+                         GTK_MESSAGE_WARNING,
+                         "EXIF lookup",
+                         "Failed to lookup location from EXIF metadata.");
+        return;
+    }
+
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->spin_latitude), location.latitude);
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->spin_longitude), location.longitude);
+
+    if (location.altitude)
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->spin_altitude), location.altitude);
 }
 
 static void

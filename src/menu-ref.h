@@ -59,6 +59,7 @@ struct overlayaz_menu_ref
     GtkWidget *spin_longitude;
     GtkWidget *box_location;
     GtkWidget *button_home;
+    GtkWidget *button_exif;
     GtkWidget *label_altitude;
     GtkWidget *button_altitude;
     GtkWidget *spin_altitude;

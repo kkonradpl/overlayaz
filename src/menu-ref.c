@@ -49,9 +49,13 @@ overlayaz_menu_ref(struct overlayaz_menu_ref *r)
     r->box_location = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 1);
     gtk_grid_attach(GTK_GRID(r->grid), r->box_location, 0, ++grid_pos, 1, 1);
 
-    r->button_home = gtk_button_new_from_icon_name("go-home", OVERLAYAZ_WINDOW_BUTTON_IMAGE);
+    r->button_home = gtk_button_new_from_icon_name("go-home-symbolic", OVERLAYAZ_WINDOW_BUTTON_IMAGE);
     gtk_widget_set_tooltip_text(r->button_home, "Use predefined home location");
     gtk_box_pack_start(GTK_BOX(r->box_location), r->button_home, FALSE, FALSE, 0);
+
+    r->button_exif = gtk_button_new_from_icon_name("find-location-symbolic", OVERLAYAZ_WINDOW_BUTTON_IMAGE);
+    gtk_widget_set_tooltip_text(r->button_exif, "Lookup EXIF location");
+    gtk_box_pack_start(GTK_BOX(r->box_location), r->button_exif, FALSE, FALSE, 0);
 
     r->label_altitude = gtk_label_new("Altitude [m]:");
     gtk_widget_set_halign(GTK_WIDGET(r->label_altitude), GTK_ALIGN_END);

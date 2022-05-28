@@ -17,6 +17,8 @@ set(SOURCE_FILES
         dialog-info.h
         draw.c
         draw.h
+        exif.c
+        exif.h
         export.c
         export.h
         file.c
