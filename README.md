@@ -22,6 +22,7 @@ In order to build overlayaz you will need:
 - SQLite
 - json-c
 - osm-gps-map
+- gexiv2
 
 Once you have all the necessary dependencies, you can use scripts available in the `build` directory.
 
