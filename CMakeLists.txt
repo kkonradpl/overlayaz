@@ -23,6 +23,11 @@ include_directories(${OSMGPSMAP_INCLUDE_DIRS})
 link_directories(${OSMGPSMAP_LIBRARY_DIRS})
 add_definitions(${OSMGPSMAP_CFLAGS_OTHER})
 
+pkg_check_modules(GEXIV2 REQUIRED gexiv2)
+include_directories(${GEXIV2_INCLUDE_DIRS})
+link_directories(${GEXIV2_LIBRARY_DIRS})
+add_definitions(${GEXIV2_CFLAGS_OTHER})
+
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -pedantic -std=c11")
 enable_testing()
 
@@ -31,6 +36,7 @@ set(LIBRARIES
         ${SQLITE_LIBRARIES}
         ${JSON-C_LIBRARIES}
         ${OSMGPSMAP_LIBRARIES}
+        ${GEXIV2_LIBRARIES}
         m)
 
 add_subdirectory(src)
