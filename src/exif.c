@@ -29,15 +29,24 @@ overlayaz_exif_get_location(const gchar               *filename,
         return FALSE;
     }
 
+#if GEXIV2_CHECK_VERSION(0, 12, 2)
     if (!gexiv2_metadata_try_get_gps_latitude(metadata, &location->latitude, NULL) ||
         !gexiv2_metadata_try_get_gps_longitude(metadata, &location->longitude, NULL))
+#else
+    if (!gexiv2_metadata_get_gps_latitude(metadata, &location->latitude) ||
+        !gexiv2_metadata_get_gps_longitude(metadata, &location->longitude))
+#endif
     {
         g_object_unref(metadata);
         return FALSE;
     }
 
     /* Altitude is optional */
+#if GEXIV2_CHECK_VERSION(0, 12, 2)
     gexiv2_metadata_try_get_gps_altitude(metadata, &location->altitude, NULL);
+#else
+    gexiv2_metadata_get_gps_altitude(metadata, &location->altitude);
+#endif
 
     g_object_unref(metadata);
     return TRUE;
