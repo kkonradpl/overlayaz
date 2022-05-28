@@ -258,9 +258,9 @@ profile_parse_ref(overlayaz_t             *o,
     if (json_object_object_get_ex(root, PROFILE_KEY_REF_SECOND_ALTITUDE, &obj_altitude))
         profile_json_get_double(obj_altitude, &locationB.altitude);
 
-    if (json_object_object_get_ex(root, PROFILE_KEY_REF_RATIO, &obj_ratio))
+    if (json_object_object_get_ex(root, PROFILE_KEY_REF_RATIO, &obj_ratio) &&
+        profile_json_get_double(obj_ratio, &ratio))
     {
-        profile_json_get_double(obj_ratio, &ratio);
         overlayaz_set_ref_one(o, type,
                               &locationA, positionA,
                               ratio);
