@@ -17,6 +17,7 @@
 #include "overlayaz.h"
 #include "file.h"
 #include "profile.h"
+#include "exif.h"
 
 static GdkPixbuf* file_load_image(const gchar*);
 
@@ -29,6 +30,7 @@ overlayaz_file_load(overlayaz_t *o,
     gchar *filename_image;
     gchar *filename_profile;
     GdkPixbuf *pixbuf;
+    struct overlayaz_location location;
 
     overlayaz_reset(o);
 
@@ -86,6 +88,15 @@ overlayaz_file_load(overlayaz_t *o,
         case OVERLAYAZ_PROFILE_LOAD_ERROR_VERSION:
             ret = OVERLAYAZ_FILE_LOAD_ERROR_PROFILE_VERSION;
             break;
+        }
+    }
+    else
+    {
+        /* Look up location in EXIF metadata if profile does not exist */
+        if (overlayaz_exif_get_location(filename_image, &location))
+        {
+            overlayaz_set_location(o, &location);
+            overlayaz_unchanged(o);
         }
     }
 

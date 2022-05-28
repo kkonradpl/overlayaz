@@ -41,12 +41,15 @@ overlayaz_exif_get_location(const gchar               *filename,
         return FALSE;
     }
 
-    /* Altitude is optional */
 #if GEXIV2_CHECK_VERSION(0, 12, 2)
-    gexiv2_metadata_try_get_gps_altitude(metadata, &location->altitude, NULL);
+    if (!gexiv2_metadata_try_get_gps_altitude(metadata, &location->altitude, NULL))
 #else
-    gexiv2_metadata_get_gps_altitude(metadata, &location->altitude);
+    if (!gexiv2_metadata_get_gps_altitude(metadata, &location->altitude))
 #endif
+    {
+        /* Altitude is optional */
+        location->altitude = 0.0;
+    }
 
     g_object_unref(metadata);
     return TRUE;
