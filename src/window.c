@@ -81,7 +81,7 @@ overlayaz_window_init(struct overlayaz_window *w)
     gtk_button_set_label(GTK_BUTTON(w->button_save), "Save profile");
     gtk_box_pack_start(GTK_BOX(w->box_bottom), w->button_save, TRUE, TRUE, 0);
 
-    w->button_preferences = gtk_button_new_from_icon_name("gtk-preferences", OVERLAYAZ_WINDOW_BUTTON_IMAGE);
+    w->button_preferences = gtk_button_new_from_icon_name("preferences-system-symbolic", OVERLAYAZ_WINDOW_BUTTON_IMAGE);
     gtk_widget_set_tooltip_text(w->button_preferences, "Preferences");
     gtk_box_pack_start(GTK_BOX(w->box_bottom), w->button_preferences, FALSE, FALSE, 0);
 

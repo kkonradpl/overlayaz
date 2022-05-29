@@ -61,7 +61,7 @@ overlayaz_menu_ref(struct overlayaz_menu_ref *r)
     gtk_widget_set_halign(GTK_WIDGET(r->label_altitude), GTK_ALIGN_END);
     gtk_box_pack_start(GTK_BOX(r->box_location), r->label_altitude, TRUE, TRUE, 0);
 
-    r->button_altitude = gtk_button_new_from_icon_name("gtk-index", OVERLAYAZ_WINDOW_BUTTON_IMAGE);
+    r->button_altitude = gtk_button_new_from_icon_name("edit-find", OVERLAYAZ_WINDOW_BUTTON_IMAGE);
     gtk_widget_set_tooltip_text(r->button_altitude, "Lookup altitude level");
     gtk_grid_attach(GTK_GRID(r->grid), r->button_altitude, 1, grid_pos, 1, 1);
 
@@ -116,7 +116,7 @@ overlayaz_menu_ref(struct overlayaz_menu_ref *r)
             gtk_widget_set_halign(GTK_WIDGET(r->refs[t].label_altitude[i]), GTK_ALIGN_END);
             gtk_grid_attach(GTK_GRID(r->grid), r->refs[t].label_altitude[i], 0, ++grid_pos, 1, 1);
 
-            r->refs[t].button_altitude[i] = gtk_button_new_from_icon_name("gtk-index", OVERLAYAZ_WINDOW_BUTTON_IMAGE);
+            r->refs[t].button_altitude[i] = gtk_button_new_from_icon_name("edit-find", OVERLAYAZ_WINDOW_BUTTON_IMAGE);
             gtk_widget_set_tooltip_text(r->refs[t].button_altitude[i], "Lookup altitude level from SRTM files");
             gtk_grid_attach(GTK_GRID(r->grid), r->refs[t].button_altitude[i], 1, grid_pos, 1, 1);
 
