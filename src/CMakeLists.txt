@@ -40,6 +40,8 @@ set(SOURCE_FILES
         marker-list.h
         menu-grid.c
         menu-grid.h
+        menu-help.c
+        menu-help.h
         menu-marker.c
         menu-marker.h
         menu-ref.c

@@ -18,6 +18,7 @@
 #include "menu-ref.h"
 #include "menu-grid.h"
 #include "menu-marker.h"
+#include "menu-help.h"
 
 #define OVERLAYAZ_WINDOW_BUTTON_IMAGE GTK_ICON_SIZE_SMALL_TOOLBAR
 #define OVERLAYAZ_WINDOW_GRID_SPACING 2
@@ -76,6 +77,7 @@ struct overlayaz_window
     struct overlayaz_menu_ref r;
     struct overlayaz_menu_grid g;
     struct overlayaz_menu_marker m;
+    struct overlayaz_menu_help h;
 
     GtkWidget *grid_meas;
     GtkWidget *label_meas_first;

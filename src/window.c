@@ -54,6 +54,7 @@ overlayaz_window_init(struct overlayaz_window *w)
     gtk_notebook_append_page(GTK_NOTEBOOK(w->notebook_menu), overlayaz_menu_ref(&w->r), gtk_label_new("Reference"));
     gtk_notebook_append_page(GTK_NOTEBOOK(w->notebook_menu), overlayaz_menu_grid(&w->g), gtk_label_new("Grid"));
     gtk_notebook_append_page(GTK_NOTEBOOK(w->notebook_menu), overlayaz_menu_marker(&w->m), gtk_label_new("Marker"));
+    gtk_notebook_append_page(GTK_NOTEBOOK(w->notebook_menu), overlayaz_menu_help(&w->h), gtk_label_new("Help"));
 
     w->grid_meas = gtk_grid_new();
     gtk_grid_set_row_spacing(GTK_GRID(w->grid_meas), OVERLAYAZ_WINDOW_GRID_SPACING);
