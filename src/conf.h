@@ -40,6 +40,9 @@ gboolean overlayaz_conf_set_export_path(const gchar*);
 gchar* overlayaz_conf_get_srtm_path(void);
 gboolean overlayaz_conf_set_srtm_path(const gchar*);
 
+gint overlayaz_conf_get_map_source(void);
+gboolean overlayaz_conf_set_map_source(gint);
+
 gdouble overlayaz_conf_get_map_grid_distance(void);
 gboolean overlayaz_conf_set_map_grid_distance(gdouble);
 

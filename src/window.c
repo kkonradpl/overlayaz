@@ -16,6 +16,7 @@
 #include <gtk/gtk.h>
 #include <osmgpsmap-1.0/osm-gps-map.h>
 #include "window.h"
+#include "conf.h"
 
 #define WINDOW_MIN_WIDTH 1000
 
@@ -138,7 +139,13 @@ overlayaz_window_init(struct overlayaz_window *w)
     w->box_map = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 1);
     gtk_notebook_append_page(GTK_NOTEBOOK(w->notebook_view), w->box_map, gtk_label_new("Map"));
 
-    w->map = osm_gps_map_new();
+    /* The map-source must be passed in an object constructor. Otherwise, it is ignored in older osm-gps-map (1.1.0).
+     * This will produce "Map source setup called twice" critical error (1.2.0), but it seems to be a library bug. */
+    w->map = g_object_new(OSM_TYPE_GPS_MAP,
+                          "map-source", overlayaz_conf_get_map_source(),
+                          "tile-cache", OSM_GPS_MAP_CACHE_AUTO,
+                          "proxy-uri", g_getenv("http_proxy"),
+                          NULL);
     gtk_widget_add_events(w->map, GDK_LEAVE_NOTIFY_MASK);
     gtk_box_pack_start(GTK_BOX(w->box_map),GTK_WIDGET(w->map), TRUE, TRUE, 0);
 

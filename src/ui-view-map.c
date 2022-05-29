@@ -26,8 +26,9 @@
 
 #define UI_VIEW_MAP_ICON_SIZE 41
 #define UI_VIEW_MAP_PATH_STEP 2000
-#define UI_VIEW_MAP_ZOOM_MIN 3
+#define UI_VIEW_MAP_ZOOM_MIN 2
 #define UI_VIEW_MAP_ZOOM_MAX 19
+#define UI_VIEW_MAP_ZOOM_DEFAULT 9
 
 #define UI_VIEW_MAP_MARKER_CACHE 100
 
@@ -78,23 +79,11 @@ overlayaz_ui_view_map_new(overlayaz_ui_t    *ui,
                           const overlayaz_t *o)
 {
     overlayaz_ui_view_map_t *ui_map = g_malloc0(sizeof(overlayaz_ui_view_map_t));
-    GValue cache = G_VALUE_INIT;
-    GValue source = G_VALUE_INIT;
     gint t, i;
 
     ui_map->ui = ui;
     ui_map->map = OSM_GPS_MAP(map);
     ui_map->o = o;
-
-    g_value_init(&cache, G_TYPE_STRING);
-    g_value_set_string(&cache, OSM_GPS_MAP_CACHE_AUTO);
-    g_object_set_property(G_OBJECT(ui_map->map), "tile-cache", &cache);
-    g_value_unset(&cache);
-
-    g_value_init(&source, G_TYPE_INT);
-    g_value_set_int(&source, OSM_GPS_MAP_SOURCE_GOOGLE_HYBRID);
-    g_object_set_property(G_OBJECT(ui_map->map), "map-source", &source);
-    g_value_unset(&source);
 
     /* Pixbuf caches */
     ui_map->pixbuf_home = overlayaz_icon_home(UI_VIEW_MAP_ICON_SIZE);
@@ -134,8 +123,19 @@ void
 overlayaz_ui_view_map_sync(overlayaz_ui_view_map_t *ui_map,
                            gboolean                 active)
 {
-    /* TODO */
-    //osm_gps_map_set_center(ui_map->map, lat, lon);
+    struct overlayaz_location location;
+    gint zoom = UI_VIEW_MAP_ZOOM_DEFAULT;
+
+    if (!overlayaz_get_location(ui_map->o, &location))
+    {
+        location.latitude = 0.0;
+        location.longitude = 0.0;
+        zoom = UI_VIEW_MAP_ZOOM_MIN;
+    }
+
+    osm_gps_map_set_center_and_zoom(ui_map->map,
+                                    location.latitude, location.longitude,
+                                    zoom);
 }
 
 void
@@ -192,6 +192,17 @@ overlayaz_ui_view_map_update(overlayaz_ui_view_map_t *ui_map)
                                                                 ui_map->pixbuf_home,
                                                                 0.5f, 1.0f);
     }
+}
+
+void
+overlayaz_ui_view_map_set_source(overlayaz_ui_view_map_t *ui_map,
+                                 gint                     source_id)
+{
+    GValue source = G_VALUE_INIT;
+    g_value_init(&source, G_TYPE_INT);
+    g_value_set_int(&source, source_id);
+    g_object_set_property(G_OBJECT(ui_map->map), "map-source", &source);
+    g_value_unset(&source);
 }
 
 static void

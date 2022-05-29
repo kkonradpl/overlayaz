@@ -54,4 +54,6 @@ void overlayaz_ui_set_rotation(overlayaz_ui_t*, gdouble);
 void overlayaz_ui_action_position(overlayaz_ui_t*, enum overlayaz_ui_action, gdouble, gdouble);
 void overlayaz_ui_action_location(overlayaz_ui_t*, enum overlayaz_ui_action, gdouble, gdouble);
 
+void overlayaz_ui_set_map_source(overlayaz_ui_t*, gint);
+
 #endif

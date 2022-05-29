@@ -14,6 +14,7 @@
  */
 
 #include <gtk/gtk.h>
+#include <osm-gps-map-source.h>
 #include "ui-preferences.h"
 #include "conf.h"
 
@@ -24,6 +25,8 @@ typedef struct overlayaz_dialog_prefs
     GtkWidget *grid;
     GtkWidget *label_srtm;
     GtkWidget *file_chooser_srtm;
+    GtkWidget *label_map_source;
+    GtkWidget *combo_map_source;
     GtkWidget *label_map_grid_distance;
     GtkWidget *spin_map_grid_distance;
     GtkWidget *label_location;
@@ -36,10 +39,14 @@ typedef struct overlayaz_dialog_prefs
     GtkWidget *spin_altitude;
     GtkWidget *check_dark_theme;
     gboolean map_update;
+    gboolean map_source_change;
 } overlayaz_dialog_prefs_t;
 
+static GtkTreeModel* ui_preferences_map_sources(void);
+static void ui_preferences_map_source_render(GtkCellLayout*, GtkCellRenderer*, GtkTreeModel*, GtkTreeIter*, gpointer);
 static void ui_preferences_from_config(overlayaz_dialog_prefs_t*);
 static void ui_preferences_to_config(overlayaz_dialog_prefs_t*);
+static void ui_preferences_combo_map_source_changed(GtkComboBox*, gpointer);
 static void ui_preferences_spin_map_grid_distance_changed(GtkSpinButton*, gpointer);
 static void ui_preferences_button_location_clicked(GtkButton*, gpointer);
 
@@ -51,9 +58,11 @@ overlayaz_ui_preferences(overlayaz_ui_t    *ui,
     GtkWidget *content_area;
     overlayaz_dialog_prefs_t p;
     gint grid_pos;
+    GtkCellRenderer *renderer;
 
     p.o = o;
     p.map_update = FALSE;
+    p.map_source_change = FALSE;
     p.dialog = gtk_dialog_new_with_buttons("Preferences",
                                            overlayaz_ui_get_parent(ui),
                                            GTK_DIALOG_MODAL,
@@ -71,7 +80,7 @@ overlayaz_ui_preferences(overlayaz_ui_t    *ui,
     gtk_widget_set_margin_bottom(p.grid, OVERLAYAZ_WINDOW_DIALOG_MARGIN);
     gtk_widget_set_margin_end(p.grid, OVERLAYAZ_WINDOW_DIALOG_MARGIN);
     gtk_grid_set_row_spacing(GTK_GRID(p.grid), OVERLAYAZ_WINDOW_GRID_SPACING);
-    gtk_grid_set_column_spacing(GTK_GRID(p.grid), 2*OVERLAYAZ_WINDOW_GRID_SPACING);
+    gtk_grid_set_column_spacing(GTK_GRID(p.grid), 4*OVERLAYAZ_WINDOW_GRID_SPACING);
     gtk_grid_set_row_homogeneous(GTK_GRID(p.grid), TRUE);
     content_area = gtk_dialog_get_content_area(GTK_DIALOG(p.dialog));
     gtk_box_pack_start(GTK_BOX(content_area), p.grid, FALSE, FALSE, 0);
@@ -84,6 +93,17 @@ overlayaz_ui_preferences(overlayaz_ui_t    *ui,
 
     p.file_chooser_srtm = gtk_file_chooser_button_new("SRTM directory", GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
     gtk_grid_attach(GTK_GRID (p.grid), p.file_chooser_srtm, 2, grid_pos, 1, 1);
+
+    p.label_map_source = gtk_label_new("Map source:");
+    gtk_widget_set_halign(GTK_WIDGET(p.label_map_source), GTK_ALIGN_START);
+    gtk_grid_attach(GTK_GRID (p.grid), p.label_map_source, 1, ++grid_pos, 1, 1);
+
+    p.combo_map_source = gtk_combo_box_new_with_model(ui_preferences_map_sources());
+    renderer = gtk_cell_renderer_text_new();
+    gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(p.combo_map_source), renderer, TRUE);
+    gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(p.combo_map_source), renderer, "text", 0, NULL);
+    gtk_cell_layout_set_cell_data_func(GTK_CELL_LAYOUT(p.combo_map_source), renderer, ui_preferences_map_source_render, NULL, NULL);
+    gtk_grid_attach(GTK_GRID (p.grid), p.combo_map_source, 2, grid_pos, 1, 1);
 
     p.label_map_grid_distance = gtk_label_new("Map grid [km]:");
     gtk_widget_set_halign(GTK_WIDGET(p.label_map_grid_distance), GTK_ALIGN_START);
@@ -131,16 +151,52 @@ overlayaz_ui_preferences(overlayaz_ui_t    *ui,
     ui_preferences_from_config(&p);
     gtk_widget_show_all(p.dialog);
 
+    g_signal_connect(p.combo_map_source, "changed", G_CALLBACK(ui_preferences_combo_map_source_changed), &p);
     g_signal_connect(p.spin_map_grid_distance, "changed", G_CALLBACK(ui_preferences_spin_map_grid_distance_changed), &p);
     g_signal_connect(p.button_location, "clicked", G_CALLBACK(ui_preferences_button_location_clicked), &p);
 
     if (gtk_dialog_run(GTK_DIALOG(p.dialog)) == GTK_RESPONSE_APPLY)
         ui_preferences_to_config(&p);
 
-    gtk_widget_destroy(p.dialog);
+    if (p.map_source_change)
+        overlayaz_ui_set_map_source(ui, gtk_combo_box_get_active(GTK_COMBO_BOX(p.combo_map_source)));
 
     if (p.map_update)
         overlayaz_ui_update_view(ui, OVERLAYAZ_UI_UPDATE_MAP);
+
+    gtk_widget_destroy(p.dialog);
+}
+
+static GtkTreeModel*
+ui_preferences_map_sources(void)
+{
+    GtkListStore *store;
+    GtkTreeIter iter;
+    gint i;
+
+    store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_BOOLEAN);
+    for (i = 0; i < OSM_GPS_MAP_SOURCE_LAST; i++)
+    {
+        gtk_list_store_append(store, &iter);
+        gtk_list_store_set(store, &iter,
+                           0, osm_gps_map_source_get_friendly_name(i),
+                           1, GPOINTER_TO_INT(osm_gps_map_source_get_repo_uri(i)),
+                           -1);
+    }
+
+    return GTK_TREE_MODEL(store);
+}
+
+static void
+ui_preferences_map_source_render(GtkCellLayout   *cell_layout,
+                                 GtkCellRenderer *cell,
+                                 GtkTreeModel    *tree_model,
+                                 GtkTreeIter     *iter,
+                                 gpointer         data)
+{
+    gboolean available;
+    gtk_tree_model_get (tree_model, iter, 1, &available, -1);
+    g_object_set(cell, "sensitive", available, NULL);
 }
 
 static void
@@ -152,6 +208,7 @@ ui_preferences_from_config(overlayaz_dialog_prefs_t *p)
     if (srtm_path && strlen(srtm_path))
         gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(p->file_chooser_srtm), srtm_path);
 
+    gtk_combo_box_set_active(GTK_COMBO_BOX(p->combo_map_source), overlayaz_conf_get_map_source());
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->spin_map_grid_distance), overlayaz_conf_get_map_grid_distance());
 
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->spin_latitude), overlayaz_conf_get_latitude());
@@ -172,6 +229,7 @@ ui_preferences_to_config(overlayaz_dialog_prefs_t *p)
     if (srtm_path && strlen(srtm_path))
         overlayaz_conf_set_srtm_path(srtm_path);
 
+    overlayaz_conf_set_map_source(gtk_combo_box_get_active(GTK_COMBO_BOX(p->combo_map_source)));
     overlayaz_conf_set_map_grid_distance(gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->spin_map_grid_distance)));
 
     overlayaz_conf_set_latitude(gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->spin_latitude)));
@@ -196,6 +254,14 @@ ui_preferences_button_location_clicked(GtkButton *button,
         gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->spin_longitude), location.longitude);
         gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->spin_altitude), location.altitude);
     }
+}
+
+static void
+ui_preferences_combo_map_source_changed(GtkComboBox *combo_box,
+                                        gpointer     user_data)
+{
+    overlayaz_dialog_prefs_t *prefs = (overlayaz_dialog_prefs_t*)user_data;
+    prefs->map_source_change = TRUE;
 }
 
 static void

@@ -23,4 +23,6 @@ void overlayaz_ui_view_map_free(overlayaz_ui_view_map_t*);
 void overlayaz_ui_view_map_sync(overlayaz_ui_view_map_t*, gboolean);
 void overlayaz_ui_view_map_update(overlayaz_ui_view_map_t*);
 
+void overlayaz_ui_view_map_set_source(overlayaz_ui_view_map_t*, gint);
+
 #endif

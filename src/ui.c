@@ -313,6 +313,13 @@ overlayaz_ui_action_location(overlayaz_ui_t           *ui,
     }
 }
 
+void
+overlayaz_ui_set_map_source(overlayaz_ui_t *ui,
+                            gint            source_id)
+{
+    overlayaz_ui_view_map_set_source(ui->map, source_id);
+}
+
 static void
 ui_sync(overlayaz_ui_t *ui,
         gboolean        file_only)

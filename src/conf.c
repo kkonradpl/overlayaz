@@ -27,6 +27,7 @@
 #define CONF_DEFAULT_OPEN_PATH         ""
 #define CONF_DEFAULT_EXPORT_PATH       ""
 #define CONF_DEFAULT_SRTM_PATH         ""
+#define CONF_DEFAULT_MAP_SOURCE        "9"
 #define CONF_DEFAULT_MAP_GRID_DISTANCE "100.0"
 #define CONF_DEFAULT_LATITUDE          "0.0"
 #define CONF_DEFAULT_LONGITUDE         "0.0"
@@ -38,6 +39,7 @@ static const gchar key_image_filter[] = "image-filter";
 static const gchar key_open_path[] = "open-path";
 static const gchar key_export_path[] = "export-path";
 static const gchar key_srtm_path[] = "srtm-path";
+static const gchar key_map_source[] = "map-source";
 static const gchar key_map_grid_distance[] = "map-grid-distance";
 static const gchar key_latitude[] = "latitude";
 static const gchar key_longitude[] = "longitude";
@@ -115,7 +117,7 @@ overlayaz_conf_get_jpeg_quality(void)
     return conf_read_int(key_jpeg_quality, CONF_DEFAULT_JPEG_QUALITY);
 }
 
-gint
+gboolean
 overlayaz_conf_set_jpeg_quality(gint value)
 {
     return conf_write_int(key_jpeg_quality, value);
@@ -167,6 +169,18 @@ gboolean
 overlayaz_conf_set_srtm_path(const gchar *value)
 {
     return conf_write_string(key_srtm_path, value);
+}
+
+gint
+overlayaz_conf_get_map_source(void)
+{
+    return conf_read_int(key_map_source, CONF_DEFAULT_MAP_SOURCE);
+}
+
+gboolean
+overlayaz_conf_set_map_source(gint value)
+{
+    return conf_write_int(key_map_source, value);
 }
 
 gdouble
