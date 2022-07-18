@@ -20,7 +20,7 @@
 #include "font.h"
 
 #define OVERLAYAZ_NAME "overlayaz"
-#define OVERLAYAZ_VERSION "1.0-beta1"
+#define OVERLAYAZ_VERSION "1.0"
 #define OVERLAYAZ_ICON "overlayaz"
 
 typedef struct overlayaz overlayaz_t;
