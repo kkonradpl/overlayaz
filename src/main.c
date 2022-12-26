@@ -53,7 +53,7 @@ show_usage(void)
     printf("  -c  configuration file\n");
     printf("headless output mode:\n");
     printf("  -o  output export file\n");
-    printf("  -o  override output filter (fast, good, best, nearest, bilinear)\n");
+    printf("  -f  override output filter (fast, good, best, nearest, bilinear)\n");
     printf("  -q  override output quality (0-100)\n");
 }
 
