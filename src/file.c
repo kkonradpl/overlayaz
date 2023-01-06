@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -93,10 +93,16 @@ overlayaz_file_load(overlayaz_t *o,
     else
     {
         /* Look up location in EXIF metadata if profile does not exist */
-        if (overlayaz_exif_get_location(filename_image, &location))
+        overlayaz_exif_t *exif = overlayaz_exif_new(filename_image);
+        if (exif)
         {
-            overlayaz_set_location(o, &location);
-            overlayaz_unchanged(o);
+            if (overlayaz_exif_get_location(exif, &location))
+            {
+                overlayaz_set_location(o, &location);
+                overlayaz_unchanged(o);
+            }
+
+            overlayaz_exif_free(exif);
         }
     }
 

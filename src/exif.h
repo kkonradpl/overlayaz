@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -15,7 +15,13 @@
 
 #ifndef OVERLAYAZ_EXIF_H_
 #define OVERLAYAZ_EXIF_H_
+#include "location.h"
 
-gboolean overlayaz_exif_get_location(const gchar*, struct overlayaz_location*);
+typedef struct overlayaz_exif overlayaz_exif_t;
+
+overlayaz_exif_t* overlayaz_exif_new(const gchar*);
+void overlayaz_exif_free(overlayaz_exif_t*);
+
+gboolean overlayaz_exif_get_location(overlayaz_exif_t*, struct overlayaz_location*);
 
 #endif

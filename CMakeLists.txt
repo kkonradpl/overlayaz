@@ -28,7 +28,7 @@ include_directories(${GEXIV2_INCLUDE_DIRS})
 link_directories(${GEXIV2_LIBRARY_DIRS})
 add_definitions(${GEXIV2_CFLAGS_OTHER})
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -pedantic -std=c11")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic -std=c11")
 enable_testing()
 
 set(LIBRARIES

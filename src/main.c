@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -14,6 +14,7 @@
  */
 
 #include <gtk/gtk.h>
+#include <gexiv2/gexiv2.h>
 #include <stdlib.h>
 #include <getopt.h>
 #include "overlayaz.h"
@@ -149,6 +150,7 @@ main (int   argc,
     overlayaz_t *o;
     enum overlayaz_file_load_error error;
 
+    gexiv2_initialize();
     gtk_disable_setlocale();
     gtk_init(&argc, &argv);
     parse_args(argc, argv);

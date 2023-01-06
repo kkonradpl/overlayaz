@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -556,18 +556,32 @@ ui_menu_ref_button_exif_clicked(GtkButton               *button,
 {
     const gchar *filename = overlayaz_get_filename(ui_r->o);
     struct overlayaz_location location;
+    overlayaz_exif_t *exif;
 
     if (filename == NULL)
         return;
 
-    if (!overlayaz_exif_get_location(filename, &location))
+    exif = overlayaz_exif_new(filename);
+    if (exif == NULL)
+    {
+        overlayaz_dialog(overlayaz_ui_get_parent(ui_r->ui),
+                         GTK_MESSAGE_WARNING,
+                         "EXIF lookup",
+                         "Failed to read EXIF metadata.");
+        return;
+    }
+
+    if (!overlayaz_exif_get_location(exif, &location))
     {
         overlayaz_dialog(overlayaz_ui_get_parent(ui_r->ui),
                          GTK_MESSAGE_WARNING,
                          "EXIF lookup",
                          "Failed to lookup location from EXIF metadata.");
+        overlayaz_exif_free(exif);
         return;
     }
+
+    overlayaz_exif_free(exif);
 
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->spin_latitude), location.latitude);
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->spin_longitude), location.longitude);
