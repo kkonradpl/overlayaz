@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -19,5 +19,6 @@
 void mingw_init(void);
 void mingw_cleanup(void);
 gboolean mingw_uri_signal(GtkWidget*, gchar*, gpointer);
+void mingw_realize(GtkWidget*, gpointer);
 
 #endif

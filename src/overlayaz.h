@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -20,7 +20,8 @@
 #include "font.h"
 
 #define OVERLAYAZ_NAME "overlayaz"
-#define OVERLAYAZ_VERSION "1.0"
+#define OVERLAYAZ_VERSION "1.1-git"
+#define OVERLAYAZ_COPYRIGHT "2020-2023"
 #define OVERLAYAZ_ICON "overlayaz"
 
 typedef struct overlayaz overlayaz_t;

@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -40,12 +40,15 @@ overlayaz_dialog_about(GtkWindow *parent)
     GtkWidget *dialog;
 
     dialog = gtk_about_dialog_new();
+#ifdef G_OS_WIN32
+    g_signal_connect(dialog, "realize", G_CALLBACK(mingw_realize), NULL);
+#endif
     gtk_window_set_icon_name(GTK_WINDOW(dialog), "gtk-about");
     gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
     gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(dialog), OVERLAYAZ_NAME);
     gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dialog), OVERLAYAZ_VERSION);
     gtk_about_dialog_set_logo_icon_name(GTK_ABOUT_DIALOG(dialog), OVERLAYAZ_ICON);
-    gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2020-2022 Konrad Kosmatka");
+    gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © " OVERLAYAZ_COPYRIGHT " Konrad Kosmatka");
     gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), "Photo visibility analysis software");
     gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(dialog), "http://fmdx.pl/overlayaz");
     gtk_about_dialog_set_license(GTK_ABOUT_DIALOG(dialog), APP_LICENCE);

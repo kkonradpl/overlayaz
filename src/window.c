@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -17,6 +17,9 @@
 #include <osmgpsmap-1.0/osm-gps-map.h>
 #include "window.h"
 #include "conf.h"
+#ifdef G_OS_WIN32
+#include "mingw.h"
+#endif
 
 #define WINDOW_MIN_WIDTH 1000
 
@@ -28,6 +31,9 @@ overlayaz_window_init(struct overlayaz_window *w)
     GtkWidget *separator;
 
     w->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+#ifdef G_OS_WIN32
+    g_signal_connect(w->window, "realize", G_CALLBACK(mingw_realize), NULL);
+#endif
     gtk_window_set_title(GTK_WINDOW(w->window), OVERLAYAZ_NAME);
     gtk_window_set_icon_name(GTK_WINDOW(w->window), OVERLAYAZ_ICON);
     gtk_window_set_position(GTK_WINDOW(w->window), GTK_WIN_POS_CENTER);
@@ -41,6 +47,9 @@ overlayaz_window_init(struct overlayaz_window *w)
     gtk_box_pack_start(GTK_BOX(w->box), w->box_menu, FALSE, FALSE, 0);
 
     w->file_chooser = gtk_file_chooser_button_new("Open a file", GTK_FILE_CHOOSER_ACTION_OPEN);
+#ifdef G_OS_WIN32
+    g_signal_connect(w->file_chooser, "realize", G_CALLBACK(mingw_realize), NULL);
+#endif
     filter = gtk_file_filter_new();
     gtk_file_filter_add_pixbuf_formats(filter);
     gtk_file_filter_add_pattern(filter, "*" OVERLAYAZ_EXTENSION_PROFILE);

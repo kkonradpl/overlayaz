@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -17,6 +17,9 @@
 #include <osm-gps-map-source.h>
 #include "ui-preferences.h"
 #include "conf.h"
+#ifdef G_OS_WIN32
+#include "mingw.h"
+#endif
 
 typedef struct overlayaz_dialog_prefs
 {
@@ -71,6 +74,9 @@ overlayaz_ui_preferences(overlayaz_ui_t    *ui,
                                            "_Apply",
                                            GTK_RESPONSE_APPLY,
                                            NULL);
+#ifdef G_OS_WIN32
+    g_signal_connect(p.dialog, "realize", G_CALLBACK(mingw_realize), NULL);
+#endif
 
     gtk_window_set_resizable(GTK_WINDOW(p.dialog), FALSE);
 

@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -18,6 +18,9 @@
 #include "ui.h"
 #include "srtm.h"
 #include "conf.h"
+#ifdef G_OS_WIN32
+#include "mingw.h"
+#endif
 
 struct overlayaz_dialog_alt
 {
@@ -59,6 +62,9 @@ overlayaz_dialog_alt(GtkWindow *parent,
                                            "_Apply",
                                            GTK_RESPONSE_APPLY,
                                            NULL);
+#ifdef G_OS_WIN32
+    g_signal_connect(d.dialog, "realize", G_CALLBACK(mingw_realize), NULL);
+#endif
 
     gtk_window_set_title(GTK_WINDOW(d.dialog), "Altitude");
 

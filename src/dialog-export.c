@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -17,6 +17,9 @@
 #include "overlayaz.h"
 #include "dialog-export.h"
 #include "conf.h"
+#ifdef G_OS_WIN32
+#include "mingw.h"
+#endif
 
 static void dialog_export_response(GtkWidget*, gint, gpointer);
 static gboolean dialog_export_str_has_suffix(const gchar*, const gchar*);
@@ -50,6 +53,9 @@ overlayaz_dialog_export(GtkWindow *parent)
                                             "Cancel", GTK_RESPONSE_CANCEL,
                                             "Save", GTK_RESPONSE_ACCEPT,
                                             NULL);
+#ifdef G_OS_WIN32
+    g_signal_connect(e->dialog, "realize", G_CALLBACK(mingw_realize), NULL);
+#endif
 
     str = overlayaz_conf_get_export_path();
     if (str && strlen(str))
