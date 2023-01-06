@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -74,6 +74,9 @@ overlayaz_ui_view_img_new(overlayaz_ui_t    *ui,
 void
 overlayaz_ui_view_img_free(overlayaz_ui_view_img_t *ui_img)
 {
+    if (ui_img->surface)
+        cairo_surface_destroy(ui_img->surface);
+
     g_free(ui_img);
 }
 
@@ -111,8 +114,14 @@ overlayaz_ui_view_img_zoom_in(overlayaz_ui_view_img_t *ui_img)
 {
     gdouble img_x = gtk_widget_get_allocated_width(GTK_WIDGET(ui_img->image));
     gdouble img_y = gtk_widget_get_allocated_height(GTK_WIDGET(ui_img->image));
-    gdouble pos_x = ui_img->offset_x + img_x/2.0 / ui_img->scale;
-    gdouble pos_y = ui_img->offset_y + img_y/2.0 / ui_img->scale;
+    gdouble pos_x;
+    gdouble pos_y;
+
+    if (ui_img->scale == 0.0)
+        return;
+
+    pos_x = ui_img->offset_x + img_x/2.0 / ui_img->scale;
+    pos_y = ui_img->offset_y + img_y/2.0 / ui_img->scale;
 
     /* Zoom in and recenter the viewport */
     ui_img->scale = 1.0;
@@ -232,7 +241,8 @@ ui_view_img_click(GtkWidget               *widget,
 {
     gdouble pos_x, pos_y;
 
-    if (event->type == GDK_BUTTON_PRESS)
+    if (event->type == GDK_BUTTON_PRESS &&
+        ui_img->scale != 0.0)
     {
         if (event->button == GDK_BUTTON_PRIMARY)
         {
@@ -243,20 +253,17 @@ ui_view_img_click(GtkWidget               *widget,
             return GDK_EVENT_PROPAGATE;
         }
 
-        if (ui_img->scale != 0.0)
-        {
-            pos_x = (event->x / ui_img->scale + ui_img->offset_x);
-            pos_y = (event->y / ui_img->scale + ui_img->offset_y);
+        pos_x = (event->x / ui_img->scale + ui_img->offset_x);
+        pos_y = (event->y / ui_img->scale + ui_img->offset_y);
 
-            if (event->button == GDK_BUTTON_SECONDARY)
-            {
-                overlayaz_ui_action_position(ui_img->ui, OVERLAYAZ_UI_ACTION_SET, pos_x, pos_y);
-                ui_view_img_measure(ui_img, event->x, event->y);
-            }
-            else if (event->button == GDK_BUTTON_MIDDLE)
-            {
-                overlayaz_ui_action_position(ui_img->ui, OVERLAYAZ_UI_ACTION_INFO, pos_x, pos_y);
-            }
+        if (event->button == GDK_BUTTON_SECONDARY)
+        {
+            overlayaz_ui_action_position(ui_img->ui, OVERLAYAZ_UI_ACTION_SET, pos_x, pos_y);
+            ui_view_img_measure(ui_img, event->x, event->y);
+        }
+        else if (event->button == GDK_BUTTON_MIDDLE)
+        {
+            overlayaz_ui_action_position(ui_img->ui, OVERLAYAZ_UI_ACTION_INFO, pos_x, pos_y);
         }
     }
     else if (event->type == GDK_BUTTON_RELEASE)
@@ -272,10 +279,11 @@ ui_view_img_motion(GtkWidget               *widget,
                    GdkEventMotion          *event,
                    overlayaz_ui_view_img_t *ui_img)
 {
-    if (ui_img->left_hold)
+    if (ui_img->left_hold &&
+        ui_img->scale != 0.0)
     {
-        ui_img->offset_x -= (event->x - ui_img->start_x)/ui_img->scale;
-        ui_img->offset_y -= (event->y - ui_img->start_y)/ui_img->scale;
+        ui_img->offset_x -= (event->x - ui_img->start_x) / ui_img->scale;
+        ui_img->offset_y -= (event->y - ui_img->start_y) / ui_img->scale;
         ui_img->start_x = event->x;
         ui_img->start_y = event->y;
         overlayaz_ui_view_img_update(ui_img);
@@ -292,6 +300,9 @@ ui_view_img_scroll(GtkWidget               *widget,
 {
     gdouble pos_x, pos_y;
     gdouble rotation;
+
+    if (ui_img->scale == 0.0)
+        return GDK_EVENT_PROPAGATE;
 
     if (event->direction == GDK_SCROLL_UP)
     {
