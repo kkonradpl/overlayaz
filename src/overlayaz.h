@@ -20,7 +20,7 @@
 #include "font.h"
 
 #define OVERLAYAZ_NAME "overlayaz"
-#define OVERLAYAZ_VERSION "1.1-git"
+#define OVERLAYAZ_VERSION "1.1"
 #define OVERLAYAZ_COPYRIGHT "2020-2023"
 #define OVERLAYAZ_ICON "overlayaz"
 
