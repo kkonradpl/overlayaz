@@ -7,7 +7,7 @@ Photo visibility analysis software.
 
 ![Screenshot](/overlayaz-map.png?raw=true)
 
-Copyright (C) 2020-2022  Konrad Kosmatka
+Copyright (C) 2020-2023  Konrad Kosmatka
 
 https://fmdx.pl/overlayaz/
 
@@ -25,6 +25,8 @@ In order to build overlayaz you will need:
 - gexiv2
 
 Once you have all the necessary dependencies, you can use scripts available in the `build` directory.
+
+The gtk3-classic fork is recommended for Windows (MINGW) build.
 
 # Installation
 After a successful build, just use:
