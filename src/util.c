@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -21,11 +21,11 @@
 
 
 gboolean
-overlayaz_grid_helper(const overlayaz_t       *o,
-                      enum overlayaz_ref_type  type,
-                      gdouble                 *first,
-                      gdouble                 *step,
-                      gint                    *count)
+overlayaz_util_grid_calc(const overlayaz_t       *o,
+                         enum overlayaz_ref_type  type,
+                         gdouble                 *first,
+                         gdouble                 *step,
+                         gint                    *count)
 {
     gdouble angle;
     gdouble ratio;
@@ -62,4 +62,12 @@ overlayaz_grid_helper(const overlayaz_t       *o,
     }
 
     return TRUE;
+}
+
+gdouble
+overlayaz_util_fov_calc(gdouble  sensor_length,
+                        gdouble  focal_length)
+{
+    gdouble fov = 2 * atan(sensor_length / (2.0 * focal_length)) * 180.0 / G_PI;
+    return fov;
 }

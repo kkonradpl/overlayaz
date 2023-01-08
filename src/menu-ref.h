@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -43,9 +43,11 @@ struct overlayaz_menu_reference
     GtkWidget *button_ref[OVERLAYAZ_REF_IDS];
     GtkWidget *label_altitude[OVERLAYAZ_REF_IDS];
     GtkWidget *button_altitude[OVERLAYAZ_REF_IDS];
+    GtkWidget *box_ratio;
+    GtkWidget *button_ratio_paste;
+    GtkWidget *button_ratio_calc;
     GtkWidget *label_ratio;
     GtkWidget *spin_ratio;
-    GtkWidget *button_ratio_sync;
 };
 
 struct overlayaz_menu_ref

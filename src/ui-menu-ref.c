@@ -17,6 +17,7 @@
 #include "ui.h"
 #include "ui-menu-ref.h"
 #include "dialog-alt.h"
+#include "dialog-ratio.h"
 #include "conf.h"
 #include "icon.h"
 #include "ui-util.h"
@@ -45,7 +46,8 @@ static void ui_menu_ref_button_alt_clicked(GtkButton*, overlayaz_ui_menu_ref_t*)
 static void ui_menu_ref_button_home_clicked(GtkButton*, overlayaz_ui_menu_ref_t*);
 static void ui_menu_ref_button_exif_clicked(GtkButton*, overlayaz_ui_menu_ref_t*);
 static void ui_menu_ref_spin_ref_changed(GtkSpinButton*, overlayaz_ui_menu_ref_t*);
-static void ui_menu_ref_button_ratio_clicked(GtkButton*, overlayaz_ui_menu_ref_t*);
+static void ui_menu_ref_button_ratio_paste_clicked(GtkButton*, overlayaz_ui_menu_ref_t*);
+static void ui_menu_ref_button_ratio_calc_clicked(GtkButton*, overlayaz_ui_menu_ref_t*);
 static void ui_menu_ref_spin_ratio_changed(GtkSpinButton*, overlayaz_ui_menu_ref_t*);
 
 static gboolean overlayaz_ui_menu_ref_set_button(overlayaz_ui_menu_ref_t*, GtkButton*);
@@ -109,8 +111,10 @@ overlayaz_ui_menu_ref_new(overlayaz_ui_t            *ui,
             g_signal_connect(ui_r->r->refs[t].spin_ref[i][OVERLAYAZ_REF_RANGE_ANGLE], "output", G_CALLBACK(overlayaz_ui_util_format_spin_button_zero), NULL);
         }
         g_object_set_data(G_OBJECT(ui_r->r->refs[t].spin_ratio), "ref-type", GINT_TO_POINTER(t));
-        g_object_set_data(G_OBJECT(ui_r->r->refs[t].button_ratio_sync), "ref-type", GINT_TO_POINTER(t));
-        g_signal_connect(ui_r->r->refs[t].button_ratio_sync, "clicked", G_CALLBACK(ui_menu_ref_button_ratio_clicked), ui_r);
+        g_object_set_data(G_OBJECT(ui_r->r->refs[t].button_ratio_paste), "ref-type", GINT_TO_POINTER(t));
+        g_object_set_data(G_OBJECT(ui_r->r->refs[t].button_ratio_calc), "ref-type", GINT_TO_POINTER(t));
+        g_signal_connect(ui_r->r->refs[t].button_ratio_paste, "clicked", G_CALLBACK(ui_menu_ref_button_ratio_paste_clicked), ui_r);
+        g_signal_connect(ui_r->r->refs[t].button_ratio_calc, "clicked", G_CALLBACK(ui_menu_ref_button_ratio_calc_clicked), ui_r);
         g_signal_connect(ui_r->r->refs[t].spin_ratio, "value-changed", G_CALLBACK(ui_menu_ref_spin_ratio_changed), ui_r);
         g_signal_connect(ui_r->r->refs[t].spin_ratio, "output", G_CALLBACK(overlayaz_ui_util_format_spin_button_zero), NULL);
     }
@@ -418,6 +422,7 @@ ui_menu_ref_combo_mode_changed(GtkComboBox             *widget,
         gtk_widget_set_sensitive(ui_r->r->refs[type].button_altitude[1], FALSE);
         gtk_widget_set_sensitive(ui_r->r->refs[type].button_ref[0], TRUE);
         gtk_widget_set_sensitive(ui_r->r->refs[type].button_ref[1], FALSE);
+        gtk_widget_set_sensitive(ui_r->r->refs[type].button_ratio_calc, TRUE);
         gtk_widget_set_sensitive(ui_r->r->refs[type].spin_ratio, TRUE);
 
         /* We want to preserve the input in the spin button, but also to hide it from user */
@@ -441,6 +446,7 @@ ui_menu_ref_combo_mode_changed(GtkComboBox             *widget,
         gtk_widget_set_sensitive(ui_r->r->refs[type].button_altitude[1], TRUE);
         gtk_widget_set_sensitive(ui_r->r->refs[type].button_ref[0], TRUE);
         gtk_widget_set_sensitive(ui_r->r->refs[type].button_ref[1], TRUE);
+        gtk_widget_set_sensitive(ui_r->r->refs[type].button_ratio_calc, FALSE);
         gtk_widget_set_sensitive(ui_r->r->refs[type].spin_ratio, FALSE);
 
         overlayaz_ui_util_set_spin_button_text_visibility(GTK_SPIN_BUTTON(ui_r->r->refs[type].spin_ratio), TRUE);
@@ -463,6 +469,7 @@ ui_menu_ref_combo_mode_changed(GtkComboBox             *widget,
         gtk_widget_set_sensitive(ui_r->r->refs[type].button_altitude[1], FALSE);
         gtk_widget_set_sensitive(ui_r->r->refs[type].button_ref[0], FALSE);
         gtk_widget_set_sensitive(ui_r->r->refs[type].button_ref[1], FALSE);
+        gtk_widget_set_sensitive(ui_r->r->refs[type].button_ratio_calc, FALSE);
         gtk_widget_set_sensitive(ui_r->r->refs[type].spin_ratio, FALSE);
 
         /* We want to hide the input value from the spin button for user, but keep it internally */
@@ -480,14 +487,14 @@ ui_menu_ref_combo_mode_changed(GtkComboBox             *widget,
     }
 
     if ((mode_azimuth == OVERLAYAZ_REF_MODE_ONE_POINT && mode_elevation != OVERLAYAZ_REF_MODE_DISABLED))
-        gtk_widget_set_sensitive(ui_r->r->refs[OVERLAYAZ_REF_AZ].button_ratio_sync, TRUE);
+        gtk_widget_set_sensitive(ui_r->r->refs[OVERLAYAZ_REF_AZ].button_ratio_paste, TRUE);
     else
-        gtk_widget_set_sensitive(ui_r->r->refs[OVERLAYAZ_REF_AZ].button_ratio_sync, FALSE);
+        gtk_widget_set_sensitive(ui_r->r->refs[OVERLAYAZ_REF_AZ].button_ratio_paste, FALSE);
 
     if (mode_elevation == OVERLAYAZ_REF_MODE_ONE_POINT && mode_azimuth != OVERLAYAZ_REF_MODE_DISABLED)
-        gtk_widget_set_sensitive(ui_r->r->refs[OVERLAYAZ_REF_EL].button_ratio_sync, TRUE);
+        gtk_widget_set_sensitive(ui_r->r->refs[OVERLAYAZ_REF_EL].button_ratio_paste, TRUE);
     else
-        gtk_widget_set_sensitive(ui_r->r->refs[OVERLAYAZ_REF_EL].button_ratio_sync, FALSE);
+        gtk_widget_set_sensitive(ui_r->r->refs[OVERLAYAZ_REF_EL].button_ratio_paste, FALSE);
 
     if (!ui_r->lock)
         ui_menu_ref_update(ui_r, type);
@@ -611,14 +618,30 @@ ui_menu_ref_spin_ratio_changed(GtkSpinButton           *spin_button,
 }
 
 static void
-ui_menu_ref_button_ratio_clicked(GtkButton               *button,
-                                 overlayaz_ui_menu_ref_t *ui_r)
+ui_menu_ref_button_ratio_paste_clicked(GtkButton               *button,
+                                      overlayaz_ui_menu_ref_t *ui_r)
 {
     gint target = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button), "ref-type"));
     gint source = (gint) (!target);
     gdouble ratio = gtk_spin_button_get_value(GTK_SPIN_BUTTON(ui_r->r->refs[source].spin_ratio));
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[target].spin_ratio), ratio);
 }
+
+static void
+ui_menu_ref_button_ratio_calc_clicked(GtkButton               *button,
+                                      overlayaz_ui_menu_ref_t *ui_r)
+{
+    gint target = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button), "ref-type"));
+    const gchar *filename = overlayaz_get_filename(ui_r->o);
+    gdouble ratio;
+
+    if (filename == NULL)
+        return;
+
+    if (overlayaz_dialog_ratio(overlayaz_ui_get_parent(ui_r->ui), filename, target, &ratio))
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(ui_r->r->refs[target].spin_ratio), ratio);
+}
+
 
 static gboolean
 overlayaz_ui_menu_ref_set_button(overlayaz_ui_menu_ref_t *ui_r,

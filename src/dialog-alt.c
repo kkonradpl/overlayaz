@@ -103,8 +103,8 @@ overlayaz_dialog_alt(GtkWindow *parent,
     d.spin_total = gtk_spin_button_new_with_range(OVERLAYAZ_WINDOW_ALT_MIN, OVERLAYAZ_WINDOW_ALT_MAX, OVERLAYAZ_WINDOW_ALT_STEP);
     gtk_grid_attach(GTK_GRID(d.grid), d.spin_total, 2, grid_pos, 1, 1);
 
-    g_signal_connect(d.spin_asl, "changed", G_CALLBACK(dialog_alt_spin_changed), &d);
-    g_signal_connect(d.spin_agl, "changed", G_CALLBACK(dialog_alt_spin_changed), &d);
+    g_signal_connect(d.spin_asl, "value-changed", G_CALLBACK(dialog_alt_spin_changed), &d);
+    g_signal_connect(d.spin_agl, "value-changed", G_CALLBACK(dialog_alt_spin_changed), &d);
 
     gtk_widget_set_sensitive(d.spin_total, FALSE);
     gtk_widget_show_all(d.dialog);

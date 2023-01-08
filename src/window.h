@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -28,15 +28,15 @@
 #define OVERLAYAZ_WINDOW_AZI_MAX 360.0
 #define OVERLAYAZ_WINDOW_AZI_STEP 0.001
 
-#define OVERLAYAZ_WINDOW_LAT_MIN -90.0
+#define OVERLAYAZ_WINDOW_LAT_MIN (-90.0)
 #define OVERLAYAZ_WINDOW_LAT_MAX 90.0
 #define OVERLAYAZ_WINDOW_LAT_STEP 0.000001
 
-#define OVERLAYAZ_WINDOW_LON_MIN -180.0
+#define OVERLAYAZ_WINDOW_LON_MIN (-180.0)
 #define OVERLAYAZ_WINDOW_LON_MAX 180.0
 #define OVERLAYAZ_WINDOW_LON_STEP 0.000001
 
-#define OVERLAYAZ_WINDOW_ALT_MIN -100000.0
+#define OVERLAYAZ_WINDOW_ALT_MIN (-100000.0)
 #define OVERLAYAZ_WINDOW_ALT_MAX 100000.0
 #define OVERLAYAZ_WINDOW_ALT_STEP 0.1
 
@@ -48,9 +48,13 @@
 #define OVERLAYAZ_WINDOW_DIST_MAX 10000.0
 #define OVERLAYAZ_WINDOW_DIST_STEP 0.001
 
-#define OVERLAYAZ_WINDOW_ROTATION_MIN -90.0
+#define OVERLAYAZ_WINDOW_ROTATION_MIN (-90.0)
 #define OVERLAYAZ_WINDOW_ROTATION_MAX 90.0
 #define OVERLAYAZ_WINDOW_ROTATION_STEP 0.01
+
+#define OVERLAYAZ_WINDOW_RATIO_MIN 0.0
+#define OVERLAYAZ_WINDOW_RATIO_MAX 10000.0
+#define OVERLAYAZ_WINDOW_RATIO_STEP 0.001
 
 enum overlayaz_window_view
 {

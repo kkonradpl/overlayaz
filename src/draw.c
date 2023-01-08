@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@
 #include "overlayaz.h"
 #include "geo.h"
 #include "marker-iter.h"
-#include "grid-helper.h"
+#include "util.h"
 #include "ui-util.h"
 
 static void draw_grid(cairo_t*, const overlayaz_t*, enum overlayaz_ref_type);
@@ -82,7 +82,7 @@ draw_grid(cairo_t                 *cr,
     gdouble x, y;
     gdouble text_pos;
 
-    if (!overlayaz_grid_helper(o, type, &first, &step, &count))
+    if (!overlayaz_util_grid_calc(o, type, &first, &step, &count))
         return;
 
     width = overlayaz_get_width(o);

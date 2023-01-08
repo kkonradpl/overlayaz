@@ -15,6 +15,8 @@ set(SOURCE_FILES
         dialog-export.h
         dialog-info.c
         dialog-info.h
+        dialog-ratio.c
+        dialog-ratio.h
         draw.c
         draw.h
         exif.c
@@ -27,8 +29,6 @@ set(SOURCE_FILES
         font.h
         geo.c
         geo.h
-        grid-helper.c
-        grid-helper.h
         icon.c
         icon.h
         location.h
@@ -69,6 +69,8 @@ set(SOURCE_FILES
         ui-view-img.h
         ui-view-map.c
         ui-view-map.h
+        util.c
+        util.h
         window.c
         window.h)
 

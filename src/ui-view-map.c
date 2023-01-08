@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@
 #include "geo.h"
 #include "conf.h"
 #include "marker-iter.h"
-#include "grid-helper.h"
+#include "util.h"
 
 #define UI_VIEW_MAP_ICON_SIZE 41
 #define UI_VIEW_MAP_PATH_STEP 2000
@@ -219,7 +219,7 @@ ui_view_map_update_grid(overlayaz_ui_view_map_t *ui_map)
 
     grid_distance = overlayaz_conf_get_map_grid_distance();
 
-    if (overlayaz_grid_helper(ui_map->o, OVERLAYAZ_REF_AZ, &angle, &step, &count))
+    if (overlayaz_util_grid_calc(ui_map->o, OVERLAYAZ_REF_AZ, &angle, &step, &count))
     {
         for (i = 0; i < count; i++)
         {

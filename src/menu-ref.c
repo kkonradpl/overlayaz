@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -61,7 +61,7 @@ overlayaz_menu_ref(struct overlayaz_menu_ref *r)
     gtk_widget_set_halign(GTK_WIDGET(r->label_altitude), GTK_ALIGN_END);
     gtk_box_pack_start(GTK_BOX(r->box_location), r->label_altitude, TRUE, TRUE, 0);
 
-    r->button_altitude = gtk_button_new_from_icon_name("edit-find", OVERLAYAZ_WINDOW_BUTTON_IMAGE);
+    r->button_altitude = gtk_button_new_from_icon_name("edit-find-symbolic", OVERLAYAZ_WINDOW_BUTTON_IMAGE);
     gtk_widget_set_tooltip_text(r->button_altitude, "Lookup altitude level");
     gtk_grid_attach(GTK_GRID(r->grid), r->button_altitude, 1, grid_pos, 1, 1);
 
@@ -116,7 +116,7 @@ overlayaz_menu_ref(struct overlayaz_menu_ref *r)
             gtk_widget_set_halign(GTK_WIDGET(r->refs[t].label_altitude[i]), GTK_ALIGN_END);
             gtk_grid_attach(GTK_GRID(r->grid), r->refs[t].label_altitude[i], 0, ++grid_pos, 1, 1);
 
-            r->refs[t].button_altitude[i] = gtk_button_new_from_icon_name("edit-find", OVERLAYAZ_WINDOW_BUTTON_IMAGE);
+            r->refs[t].button_altitude[i] = gtk_button_new_from_icon_name("edit-find-symbolic", OVERLAYAZ_WINDOW_BUTTON_IMAGE);
             gtk_widget_set_tooltip_text(r->refs[t].button_altitude[i], "Lookup altitude level from SRTM files");
             gtk_grid_attach(GTK_GRID(r->grid), r->refs[t].button_altitude[i], 1, grid_pos, 1, 1);
 
@@ -132,18 +132,25 @@ overlayaz_menu_ref(struct overlayaz_menu_ref *r)
             }
         }
 
+        r->refs[t].box_ratio = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 1);
+        gtk_grid_attach(GTK_GRID(r->grid), r->refs[t].box_ratio, 0, ++grid_pos, 1, 1);
+
+        r->refs[t].button_ratio_paste = gtk_button_new_from_icon_name("edit-paste-symbolic", OVERLAYAZ_WINDOW_BUTTON_IMAGE);
+        gtk_box_pack_start(GTK_BOX(r->refs[t].box_ratio), r->refs[t].button_ratio_paste, FALSE, FALSE, 0);
+        if (t == OVERLAYAZ_REF_AZ)
+            gtk_widget_set_tooltip_text(r->refs[t].button_ratio_paste, "Paste ratio value from elevation reference");
+        else if (t == OVERLAYAZ_REF_EL)
+            gtk_widget_set_tooltip_text(r->refs[t].button_ratio_paste, "Paste ratio value from azimuth reference");
+
         r->refs[t].label_ratio = gtk_label_new("Ratio [px/°]:");
         gtk_widget_set_halign(GTK_WIDGET(r->refs[t].label_ratio), GTK_ALIGN_END);
-        gtk_grid_attach(GTK_GRID(r->grid), r->refs[t].label_ratio, 0, ++grid_pos, 1, 1);
+        gtk_box_pack_start(GTK_BOX(r->refs[t].box_ratio), r->refs[t].label_ratio, TRUE, TRUE, 0);
 
-        r->refs[t].button_ratio_sync = gtk_button_new_from_icon_name("edit-paste", OVERLAYAZ_WINDOW_BUTTON_IMAGE);
-        gtk_grid_attach(GTK_GRID(r->grid), r->refs[t].button_ratio_sync, 1, grid_pos, 1, 1);
-        if (t == OVERLAYAZ_REF_AZ)
-            gtk_widget_set_tooltip_text(r->refs[t].button_ratio_sync, "Paste ratio value from elevation reference");
-        else if (t == OVERLAYAZ_REF_EL)
-            gtk_widget_set_tooltip_text(r->refs[t].button_ratio_sync, "Paste ratio value from azimuth reference");
+        r->refs[t].button_ratio_calc = gtk_button_new_from_icon_name("edit-find-symbolic", OVERLAYAZ_WINDOW_BUTTON_IMAGE);
+        gtk_widget_set_tooltip_text(r->refs[t].button_ratio_calc, "Lookup ratio from EXIF");
+        gtk_grid_attach(GTK_GRID(r->grid), r->refs[t].button_ratio_calc, 1, grid_pos, 1, 1);
 
-        r->refs[t].spin_ratio = gtk_spin_button_new_with_range(0, 10000, 0.001);
+        r->refs[t].spin_ratio = gtk_spin_button_new_with_range(OVERLAYAZ_WINDOW_RATIO_MIN, OVERLAYAZ_WINDOW_RATIO_MAX, OVERLAYAZ_WINDOW_RATIO_STEP);
         gtk_grid_attach(GTK_GRID(r->grid), r->refs[t].spin_ratio, 2, grid_pos, 1, 1);
     }
 

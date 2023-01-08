@@ -13,18 +13,10 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef OVERLAYAZ_EXIF_H_
-#define OVERLAYAZ_EXIF_H_
-#include "location.h"
+#ifndef OVERLAYAZ_UTIL_H_
+#define OVERLAYAZ_UTIL_H_
 
-typedef struct overlayaz_exif overlayaz_exif_t;
-
-overlayaz_exif_t* overlayaz_exif_new(const gchar*);
-void overlayaz_exif_free(overlayaz_exif_t*);
-
-gboolean overlayaz_exif_get_location(overlayaz_exif_t*, struct overlayaz_location*);
-gboolean overlayaz_exif_get_pixel_size_with_fallback(overlayaz_exif_t*, gint*, gint*);
-gboolean overlayaz_exif_get_focal_length(overlayaz_exif_t*, gdouble*);
-gboolean overlayaz_exif_get_focal_plane_res(overlayaz_exif_t*, gdouble*, gdouble*);
+gboolean overlayaz_util_grid_calc(const overlayaz_t*, enum overlayaz_ref_type, gdouble*, gdouble*, gint*);
+gdouble overlayaz_util_fov_calc(gdouble, gdouble);
 
 #endif

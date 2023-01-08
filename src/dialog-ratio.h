@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -13,9 +13,10 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef OVERLAYAZ_GRID_HELPER_H_
-#define OVERLAYAZ_GRID_HELPER_H_
+#ifndef OVERLAYAZ_DIALOG_RATIO_H_
+#define OVERLAYAZ_DIALOG_RATIO_H_
+#include "overlayaz.h"
 
-gboolean overlayaz_grid_helper(const overlayaz_t*, enum overlayaz_ref_type, gdouble*, gdouble*, gint*);
+gboolean overlayaz_dialog_ratio(GtkWindow*, const gchar*, enum overlayaz_ref_type, gdouble*);
 
 #endif
