@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -15,6 +15,9 @@
 
 #include <gtk/gtk.h>
 #include "dialog.h"
+#ifdef G_OS_WIN32
+#include "mingw.h"
+#endif
 
 void
 overlayaz_dialog(GtkWindow      *parent,
@@ -36,6 +39,9 @@ overlayaz_dialog(GtkWindow      *parent,
                                     icon,
                                     GTK_BUTTONS_CLOSE,
                                     NULL);
+#ifdef G_OS_WIN32
+    g_signal_connect(dialog, "realize", G_CALLBACK(mingw_realize), NULL);
+#endif
 
     gtk_message_dialog_set_markup(GTK_MESSAGE_DIALOG(dialog), msg);
     gtk_window_set_title(GTK_WINDOW(dialog), title);
@@ -55,6 +61,10 @@ overlayaz_dialog_ask_unsaved(GtkWindow *parent)
                                     GTK_MESSAGE_QUESTION,
                                     GTK_BUTTONS_NONE,
                                     "There are some unsaved changes.\nDo you want to save them?");
+#ifdef G_OS_WIN32
+    g_signal_connect(dialog, "realize", G_CALLBACK(mingw_realize), NULL);
+#endif
+
     gtk_dialog_add_buttons(GTK_DIALOG(dialog),
                            "_Cancel", GTK_RESPONSE_CANCEL,
                            "_Save", GTK_RESPONSE_YES,
@@ -78,6 +88,10 @@ overlayaz_dialog_ask_overwrite(GtkWindow *parent)
                                     GTK_MESSAGE_QUESTION,
                                     GTK_BUTTONS_NONE,
                                     "The profile file already exists.\nDo you want to overwrite it?");
+#ifdef G_OS_WIN32
+    g_signal_connect(dialog, "realize", G_CALLBACK(mingw_realize), NULL);
+#endif
+
     gtk_dialog_add_buttons(GTK_DIALOG(dialog),
                            "_Cancel", GTK_RESPONSE_CANCEL,
                            "_Save", GTK_RESPONSE_YES,
@@ -102,6 +116,9 @@ overlayaz_dialog_ask_yesno(GtkWindow   *parent,
                                    GTK_MESSAGE_QUESTION,
                                    GTK_BUTTONS_YES_NO,
                                    NULL);
+#ifdef G_OS_WIN32
+    g_signal_connect(dialog, "realize", G_CALLBACK(mingw_realize), NULL);
+#endif
 
     gtk_message_dialog_set_markup(GTK_MESSAGE_DIALOG(dialog), text);
     gtk_window_set_title(GTK_WINDOW(dialog), title);
