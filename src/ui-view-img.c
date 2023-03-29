@@ -18,8 +18,6 @@
 #include "ui.h"
 #include "ui-view-img.h"
 #include "draw.h"
-#include "geo.h"
-#include "conf.h"
 
 #define UI_VIEW_IMG_ZOOM_LIMIT 10.0
 #define UI_VIEW_IMG_ZOOM_FACTOR 1.25
@@ -140,11 +138,11 @@ ui_view_img_draw(GtkWidget               *widget,
     gdouble grid_pattern[grid_pattern_len];
     gint widget_width = gtk_widget_get_allocated_width(widget);
     gint widget_height = gtk_widget_get_allocated_height(widget);
-    enum overlayaz_ref_type ref_type;
-    enum overlayaz_ref_id ref_id;
+    enum overlayaz_ref_type ref_type, t;
+    enum overlayaz_ref_id ref_id, i;
     gboolean valid_ref;
     gboolean selected;
-    gint t, i, j;
+    gint j;
     gdouble pos;
     gdouble r, g, b;
 
