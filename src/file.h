@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@ enum overlayaz_file_load_error
 {
     OVERLAYAZ_FILE_LOAD_OK,
     OVERLAYAZ_FILE_LOAD_ERROR_IMAGE_OPEN,
+    OVERLAYAZ_FILE_LOAD_ERROR_IMAGE_TOO_BIG,
     OVERLAYAZ_FILE_LOAD_ERROR_PROFILE_OPEN,
     OVERLAYAZ_FILE_LOAD_ERROR_PROFILE_PARSE,
     OVERLAYAZ_FILE_LOAD_ERROR_PROFILE_FORMAT,

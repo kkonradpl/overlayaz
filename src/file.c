@@ -19,6 +19,11 @@
 #include "profile.h"
 #include "exif.h"
 
+/* Image size limit from cairo */
+#define MAX_IMAGE_SIZE 32767
+#define STR(x) #x
+#define VAL(x) STR(x)
+
 static GdkPixbuf* file_load_image(const gchar*);
 
 
@@ -57,6 +62,14 @@ overlayaz_file_load(overlayaz_t *o,
     {
         g_object_unref(pixbuf);
         ret = OVERLAYAZ_FILE_LOAD_ERROR_IMAGE_OPEN;
+        goto overlayaz_file_load_cleanup;
+    }
+
+    if (gdk_pixbuf_get_width(pixbuf) > MAX_IMAGE_SIZE ||
+        gdk_pixbuf_get_height(pixbuf) > MAX_IMAGE_SIZE)
+    {
+        g_object_unref(pixbuf);
+        ret = OVERLAYAZ_FILE_LOAD_ERROR_IMAGE_TOO_BIG;
         goto overlayaz_file_load_cleanup;
     }
 
@@ -121,6 +134,8 @@ overlayaz_file_load_error(enum overlayaz_file_load_error error)
             return "No error";
         case OVERLAYAZ_FILE_LOAD_ERROR_IMAGE_OPEN:
             return "Failed to open the image";
+        case OVERLAYAZ_FILE_LOAD_ERROR_IMAGE_TOO_BIG:
+            return "Failed to process the image (too big, limit: " VAL(MAX_IMAGE_SIZE) " px)";
         case OVERLAYAZ_FILE_LOAD_ERROR_PROFILE_OPEN:
             return "Failed to open the profile file";
         case OVERLAYAZ_FILE_LOAD_ERROR_PROFILE_PARSE:
