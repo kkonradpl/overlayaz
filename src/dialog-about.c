@@ -50,7 +50,7 @@ overlayaz_dialog_about(GtkWindow *parent)
     gtk_about_dialog_set_logo_icon_name(GTK_ABOUT_DIALOG(dialog), OVERLAYAZ_ICON);
     gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © " OVERLAYAZ_COPYRIGHT " Konrad Kosmatka");
     gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), "Photo visibility analysis software");
-    gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(dialog), "http://fmdx.pl/overlayaz");
+    gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(dialog), "https://fmdx.pl/overlayaz");
     gtk_about_dialog_set_license(GTK_ABOUT_DIALOG(dialog), APP_LICENCE);
 #ifdef G_OS_WIN32
     g_signal_connect(dialog, "activate-link", G_CALLBACK(mingw_uri_signal), NULL);
