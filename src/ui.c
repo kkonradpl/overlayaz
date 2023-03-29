@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -418,27 +418,8 @@ ui_file_chooser_set(GtkFileChooserButton *widget,
     /* Sync UI with the model */
     ui_sync(ui, FALSE);
 
-    switch (error)
-    {
-    case OVERLAYAZ_FILE_LOAD_ERROR_IMAGE_OPEN:
-        overlayaz_dialog(overlayaz_ui_get_parent(ui), GTK_MESSAGE_ERROR, "Profile", "Failed to open the image");
-        break;
-    case OVERLAYAZ_FILE_LOAD_ERROR_PROFILE_OPEN:
-        overlayaz_dialog(overlayaz_ui_get_parent(ui), GTK_MESSAGE_ERROR, "Profile", "Failed to open the profile file");
-        break;
-    case OVERLAYAZ_FILE_LOAD_ERROR_PROFILE_PARSE:
-        overlayaz_dialog(overlayaz_ui_get_parent(ui), GTK_MESSAGE_ERROR, "Profile", "Failed to parse the profile file");
-        break;
-    case OVERLAYAZ_FILE_LOAD_ERROR_PROFILE_FORMAT:
-        overlayaz_dialog(overlayaz_ui_get_parent(ui), GTK_MESSAGE_ERROR, "Profile", "The profile file has an invalid format");
-        break;
-    case OVERLAYAZ_FILE_LOAD_ERROR_PROFILE_VERSION:
-        overlayaz_dialog(overlayaz_ui_get_parent(ui), GTK_MESSAGE_ERROR, "Profile", "The profile format version is unsupported");
-        break;
-    case OVERLAYAZ_FILE_LOAD_OK:
-    default:
-        break;
-    }
+    if (error != OVERLAYAZ_FILE_LOAD_OK)
+        overlayaz_dialog(overlayaz_ui_get_parent(ui), GTK_MESSAGE_ERROR, OVERLAYAZ_NAME, overlayaz_file_load_error(error));
 
     path = g_path_get_dirname(filename);
     overlayaz_conf_set_open_path(path);
