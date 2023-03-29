@@ -28,7 +28,11 @@ include_directories(${GEXIV2_INCLUDE_DIRS})
 link_directories(${GEXIV2_LIBRARY_DIRS})
 add_definitions(${GEXIV2_CFLAGS_OTHER})
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wno-unused-parameter -pedantic -std=c11")
+find_program(GLIB_COMPILE_RESOURCES NAMES glib-compile-resources REQUIRED)
+execute_process(COMMAND ${GLIB_COMPILE_RESOURCES} --generate-source --sourcedir=${CMAKE_SOURCE_DIR} --target=${CMAKE_BINARY_DIR}/resources.c ${CMAKE_SOURCE_DIR}/icons/icons.xml)
+execute_process(COMMAND ${GLIB_COMPILE_RESOURCES} --generate-header --sourcedir=${CMAKE_SOURCE_DIR} --target=${CMAKE_BINARY_DIR}/resources.h ${CMAKE_SOURCE_DIR}/icons/icons.xml)
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wno-unused-parameter -Wno-overlength-strings -pedantic -std=c11")
 enable_testing()
 
 set(LIBRARIES
@@ -47,6 +51,7 @@ if(NOT MINGW)
     install(FILES overlayaz.desktop DESTINATION share/applications)
     install(DIRECTORY icons/ DESTINATION share/icons/hicolor
             PATTERN "INFO" EXCLUDE
-            PATTERN "overlayaz.ico" EXCLUDE)
+            PATTERN "overlayaz.ico" EXCLUDE
+            PATTERN "icons.xml" EXCLUDE)
     install(CODE "execute_process(COMMAND gtk-update-icon-cache /usr/share/icons/hicolor)")
 endif()

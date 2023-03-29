@@ -23,6 +23,7 @@
 #include "ui.h"
 #include "file.h"
 #include "export.h"
+#include "resources.h"
 #ifdef G_OS_WIN32
 #include "mingw.h"
 #endif
@@ -154,6 +155,9 @@ main (int   argc,
     gtk_disable_setlocale();
     gtk_init(&argc, &argv);
     parse_args(argc, argv);
+
+    g_resources_register(icons_get_resource());
+    gtk_icon_theme_add_resource_path(gtk_icon_theme_get_default(), "/org/overlayaz/icons");
 
 #ifdef G_OS_WIN32
     mingw_init();

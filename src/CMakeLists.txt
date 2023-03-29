@@ -72,7 +72,8 @@ set(SOURCE_FILES
         util.c
         util.h
         window.c
-        window.h)
+        window.h
+        ${CMAKE_BINARY_DIR}/resources.c)
 
 set(SOURCE_FILES_MINGW
         mingw.c
@@ -92,8 +93,10 @@ if(MINGW)
     add_library(liboverlayaz STATIC ${SOURCE_FILES} ${SOURCE_FILES_MINGW})
     add_executable(overlayaz main.c ${ICON_MINGW})
 ELSE()
+
     add_library(liboverlayaz STATIC ${SOURCE_FILES})
     add_executable(overlayaz main.c)
 ENDIF()
 
+target_include_directories(overlayaz PRIVATE ${CMAKE_BINARY_DIR})
 target_link_libraries(overlayaz liboverlayaz ${LIBRARIES})

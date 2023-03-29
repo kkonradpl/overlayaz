@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+    <gresource prefix="/org/overlayaz/">
+        <file>icons/16x16/apps/overlayaz.png</file>
+        <file>icons/22x22/apps/overlayaz.png</file>
+        <file>icons/24x24/apps/overlayaz.png</file>
+        <file>icons/32x32/apps/overlayaz.png</file>
+        <file>icons/48x48/apps/overlayaz.png</file>
+        <file>icons/scalable/apps/overlayaz.svg</file>
+    </gresource>
+</gresources>
