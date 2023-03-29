@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -96,7 +96,7 @@ overlayaz_menu_help(struct overlayaz_menu_help *h)
 static void
 menu_help_new(GtkWidget   **scrolled,
               GtkWidget   **textview,
-              const gchar *text)
+              const gchar  *text)
 {
     *scrolled = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(*scrolled), GTK_SHADOW_ETCHED_OUT);
@@ -111,4 +111,5 @@ menu_help_new(GtkWidget   **scrolled,
     gtk_text_view_set_right_margin(GTK_TEXT_VIEW(*textview), 8);
     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(*textview), GTK_WRAP_CHAR);
     gtk_container_add(GTK_CONTAINER(*scrolled), *textview);
+    gtk_widget_set_can_focus(*textview, FALSE);
 }
