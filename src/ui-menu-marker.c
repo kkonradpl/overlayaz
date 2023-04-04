@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -88,12 +88,12 @@ overlayaz_ui_menu_marker_new(overlayaz_ui_t               *ui,
     g_signal_connect_after(ui_m->m->textview_name, "key-press-event", G_CALLBACK(ui_menu_marker_textview_name_key_press), ui);
     text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(ui_m->m->textview_name));
     g_signal_connect(text_buffer, "changed", G_CALLBACK(ui_menu_marker_textbuffer_name_changed), ui_m);
-    g_signal_connect(ui_m->m->spin_lat, "changed", G_CALLBACK(ui_menu_marker_spin_lat_changed), ui_m);
-    g_signal_connect(ui_m->m->spin_lat, "changed", G_CALLBACK(ui_menu_marker_spin_latlon_changed), ui_m);
-    g_signal_connect(ui_m->m->spin_lon, "changed", G_CALLBACK(ui_menu_marker_spin_lon_changed), ui_m);
-    g_signal_connect(ui_m->m->spin_lon, "changed", G_CALLBACK(ui_menu_marker_spin_latlon_changed), ui_m);
-    g_signal_connect(ui_m->m->spin_azi, "changed", G_CALLBACK(ui_menu_marker_spin_azidist_changed), ui_m);
-    g_signal_connect(ui_m->m->spin_dist, "changed", G_CALLBACK(ui_menu_marker_spin_azidist_changed), ui_m);
+    g_signal_connect(ui_m->m->spin_lat, "value-changed", G_CALLBACK(ui_menu_marker_spin_lat_changed), ui_m);
+    g_signal_connect(ui_m->m->spin_lat, "value-changed", G_CALLBACK(ui_menu_marker_spin_latlon_changed), ui_m);
+    g_signal_connect(ui_m->m->spin_lon, "value-changed", G_CALLBACK(ui_menu_marker_spin_lon_changed), ui_m);
+    g_signal_connect(ui_m->m->spin_lon, "value-changed", G_CALLBACK(ui_menu_marker_spin_latlon_changed), ui_m);
+    g_signal_connect(ui_m->m->spin_azi, "value-changed", G_CALLBACK(ui_menu_marker_spin_azidist_changed), ui_m);
+    g_signal_connect(ui_m->m->spin_dist, "value-changed", G_CALLBACK(ui_menu_marker_spin_azidist_changed), ui_m);
     g_signal_connect(ui_m->m->combo_tick, "changed", G_CALLBACK(ui_menu_marker_combo_changed_tick), ui_m);
     g_signal_connect(ui_m->m->font_marker, "font-set", G_CALLBACK(ui_menu_marker_font_set), ui_m);
     g_signal_connect(ui_m->m->color_marker_font, "color-set", G_CALLBACK(ui_menu_marker_font_color_set), ui_m);

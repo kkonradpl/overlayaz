@@ -158,7 +158,7 @@ overlayaz_ui_preferences(overlayaz_ui_t    *ui,
     gtk_widget_show_all(p.dialog);
 
     g_signal_connect(p.combo_map_source, "changed", G_CALLBACK(ui_preferences_combo_map_source_changed), &p);
-    g_signal_connect(p.spin_map_grid_distance, "changed", G_CALLBACK(ui_preferences_spin_map_grid_distance_changed), &p);
+    g_signal_connect(p.spin_map_grid_distance, "value-changed", G_CALLBACK(ui_preferences_spin_map_grid_distance_changed), &p);
     g_signal_connect(p.button_location, "clicked", G_CALLBACK(ui_preferences_button_location_clicked), &p);
 
     if (gtk_dialog_run(GTK_DIALOG(p.dialog)) == GTK_RESPONSE_APPLY)
