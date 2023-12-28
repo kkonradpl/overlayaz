@@ -23,6 +23,7 @@
 #include "conf.h"
 #include "marker-iter.h"
 #include "util.h"
+#include "ui-util.h"
 
 #define UI_VIEW_MAP_ICON_SIZE 41
 #define UI_VIEW_MAP_PATH_STEP 2000
@@ -360,7 +361,10 @@ ui_view_map_press(GtkWidget               *widget,
         return GDK_EVENT_PROPAGATE;
 
     if (event->button == GDK_BUTTON_PRIMARY)
+    {
         ui_map->map_busy = TRUE;
+        overlayaz_ui_util_set_cursor(widget, "grabbing");
+    }
     else
     {
         osm_gps_map_convert_screen_to_geographic(ui_map->map, (gint)round(event->x), (gint)round(event->y), &coord);
@@ -414,6 +418,8 @@ ui_view_map_release(GtkWidget               *widget,
          * available yet in this case, but the previous measurement is still valid, so we will keep it. */
         if (event->button != GDK_BUTTON_PRIMARY)
             ui_view_map_measure(ui_map, event->x, event->y);
+
+        overlayaz_ui_util_set_cursor(widget, NULL);
     }
 
     return GDK_EVENT_PROPAGATE;

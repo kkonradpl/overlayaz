@@ -116,11 +116,12 @@ overlayaz_window_init(struct overlayaz_window *w)
 
     w->image = gtk_drawing_area_new();
     g_object_set(w->image, "can-focus", TRUE, NULL);
+    gtk_widget_set_has_window(w->image, TRUE);
     gtk_widget_add_events(w->image, GDK_BUTTON_PRESS_MASK |
-                                           GDK_BUTTON_RELEASE_MASK |
-                                           GDK_POINTER_MOTION_MASK |
-                                           GDK_LEAVE_NOTIFY_MASK |
-                                           GDK_SCROLL_MASK);
+                                    GDK_BUTTON_RELEASE_MASK |
+                                    GDK_POINTER_MOTION_MASK |
+                                    GDK_LEAVE_NOTIFY_MASK |
+                                    GDK_SCROLL_MASK);
 
     gtk_box_pack_start(GTK_BOX(w->box_image), w->image, TRUE, TRUE, 0);
 

@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -75,6 +75,18 @@ gchar*
 overlayaz_ui_util_format_angle(gdouble value)
 {
     return format_value_and_unit(value, PRECISION_ANGLE, "°");
+}
+
+void
+overlayaz_ui_util_set_cursor(GtkWidget   *widget,
+                             const gchar *name)
+{
+    GdkCursor *cursor = NULL;
+
+    if (name)
+        cursor = gdk_cursor_new_from_name(gtk_widget_get_display(widget), name);
+
+    gdk_window_set_cursor(gtk_widget_get_window(widget), cursor);
 }
 
 static gchar*

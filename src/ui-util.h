@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -21,5 +21,7 @@ gboolean overlayaz_ui_util_format_spin_button_zero(GtkSpinButton*, gpointer);
 
 gchar* overlayaz_ui_util_format_distance(gdouble);
 gchar* overlayaz_ui_util_format_angle(gdouble);
+
+void overlayaz_ui_util_set_cursor(GtkWidget*, const gchar*);
 
 #endif

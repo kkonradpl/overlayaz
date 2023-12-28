@@ -17,6 +17,7 @@
 #include <math.h>
 #include "ui.h"
 #include "ui-view-img.h"
+#include "ui-util.h"
 #include "draw.h"
 
 #define UI_VIEW_IMG_ZOOM_LIMIT 10.0
@@ -248,6 +249,7 @@ ui_view_img_click(GtkWidget               *widget,
             ui_img->start_x = event->x;
             ui_img->start_y = event->y;
             overlayaz_ui_view_img_update(ui_img);
+            overlayaz_ui_util_set_cursor(widget, "grabbing");
             return GDK_EVENT_PROPAGATE;
         }
 
@@ -267,6 +269,7 @@ ui_view_img_click(GtkWidget               *widget,
     else if (event->type == GDK_BUTTON_RELEASE)
     {
         ui_img->left_hold = FALSE;
+        overlayaz_ui_util_set_cursor(widget, NULL);
     }
 
     return GDK_EVENT_PROPAGATE;
