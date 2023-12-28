@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2023  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -145,12 +145,14 @@ srtm_parse(const gchar *path,
     if (fseek(fp, offset, SEEK_SET) != 0)
     {
         g_warning("%s: Unable to fseek %s", __func__, path);
+        fclose(fp);
         return OVERLAYAZ_SRTM_ERROR_READ;
     }
 
     if (fread(buffer, 1, SRTM_VALUE_SIZEOF, fp) != SRTM_VALUE_SIZEOF)
     {
         g_warning("%s: Unable to fread %s", __func__, path);
+        fclose(fp);
         return OVERLAYAZ_SRTM_ERROR_READ;
     }
 
