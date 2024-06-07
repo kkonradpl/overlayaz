@@ -143,7 +143,7 @@ overlayaz_profile_save(const overlayaz_t *o,
     size_t json_length;
     size_t wrote;
 
-    fp = fopen(filename, "w");
+    fp = g_fopen(filename, "w");
     if (fp == NULL)
         return OVERLAYAZ_PROFILE_SAVE_ERROR_OPEN;
 
