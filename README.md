@@ -47,3 +47,10 @@ An example photo with overlayaz profile is available in `example` directory.
 ![Screenshot](/example/dylewska-processed.jpg?raw=true)
 
 The tutorial is available in application (see the Help tab).
+
+# Donations
+
+This is an open-source project which is free. If you like it, you can consider buying me a coffee.
+
+<a href="https://www.buymeacoffee.com/kkonradpl"><img src="https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=%E2%98%95&slug=kkonradpl&button_colour=5F7FFF&font_colour=ffffff&font_family=Poppins&outline_colour=000000&coffee_colour=FFDD00" /></a>
+
