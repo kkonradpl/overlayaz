@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.6)
-
 find_package(CMOCKA REQUIRED)
 include_directories(${CMOCKA_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR}/src)

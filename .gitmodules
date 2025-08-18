@@ -1,0 +1,3 @@
+[submodule "lib/geographiclib-c"]
+	path = lib/geographiclib-c
+	url = https://github.com/geographiclib/geographiclib-c/

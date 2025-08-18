@@ -22,6 +22,12 @@ In order to build overlayaz you will need:
 - json-c
 - osm-gps-map
 - gexiv2
+- cmocka
+- geographiclib-c
+
+The geographiclib-c is used as a submodule. Clone the repository with:
+
+$ git clone --recurse-submodules https://github.com/kkonradpl/overlayaz
 
 Once you have all the necessary dependencies, you can use scripts available in the `build` directory.
 

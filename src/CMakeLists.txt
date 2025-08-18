@@ -1,8 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
-
 set(SOURCE_FILES
-        geodesic/geodesic.c
-        geodesic/geodesic.h
         conf.c
         conf.h
         dialog.c

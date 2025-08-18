@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.10)
 project(overlayaz)
 
 find_package(PkgConfig REQUIRED)
@@ -41,8 +41,10 @@ set(LIBRARIES
         ${JSON-C_LIBRARIES}
         ${OSMGPSMAP_LIBRARIES}
         ${GEXIV2_LIBRARIES}
+        geodc
         m)
 
+add_subdirectory(lib)
 add_subdirectory(src)
 add_subdirectory(test)
 

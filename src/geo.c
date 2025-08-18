@@ -1,6 +1,6 @@
 /*
  *  overlayaz – photo visibility analysis software
- *  Copyright (c) 2020-2022  Konrad Kosmatka
+ *  Copyright (c) 2020-2025  Konrad Kosmatka
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -15,7 +15,7 @@
 
 #include <gtk/gtk.h>
 #include <math.h>
-#include "geodesic/geodesic.h"
+#include <geodesic.h>
 
 /* WGS84 */
 #define OVERLAYAZ_GEO_A 6378137.0
